@@ -16,14 +16,14 @@ namespace RoomWorld.Controllers
     {
         private List<User> users = new List<User>
         {
-           new User { email = "sasha@mail.ru", name = "sasha", password = "123", role = "user", surname = "K", phoneNumber = "+3751234596" }
+           new User { Email = "sasha@mail.ru", Name = "sasha", Password = "123", Role = "user", Surname = "K", PhoneNumber = "+3751234596" }
         };
 
         [HttpGet("/token")]
         public async Task Token()
         {
             var username = "sasha@mail.ru";
-            var password = "123w";
+            var password = "123";
 
             var identity = GetIdentity(username, password);
             if (identity == null)
@@ -55,13 +55,13 @@ namespace RoomWorld.Controllers
 
         private ClaimsIdentity GetIdentity(string username, string password)
         {
-            User user = users.FirstOrDefault(x => x.email == username && x.password == password);
+            User user = users.FirstOrDefault(x => x.Email == username && x.Password == password);
             if (user != null)
             {
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimsIdentity.DefaultNameClaimType, user.email),
-                    new Claim(ClaimsIdentity.DefaultRoleClaimType, user.role)
+                    new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
+                    new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role)
                 };
                 ClaimsIdentity claimsIdentity =
                 new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
