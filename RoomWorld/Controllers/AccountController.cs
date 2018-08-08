@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using RoomWorld.Models;
@@ -14,18 +16,72 @@ namespace RoomWorld.Controllers
 {
     public class AccountController : Controller
     {
-        private List<User> users = new List<User>
-        {
-           new User { Email = "sasha@mail.ru", Name = "sasha", Password = "123", Role = "user", Surname = "K", PhoneNumber = "+3751234596" }
-        };
 
-        [HttpGet("/token")]
-        public async Task Token()
+        [HttpPost("/registration")]
+        public async Task Registration(string name, string surname, string email, string password, [FromServices]RoomWorldDatabaseContext databaseContext)
         {
-            var username = "sasha@mail.ru";
-            var password = "123";
+            if (name == null || surname == null || email == null || password == null)
+            {
+                Response.StatusCode = 400;
+                await Response.WriteAsync("Some field are empty.");
+                return;
+            }
 
-            var identity = GetIdentity(username, password);
+            User existingUser = databaseContext.Users.FirstOrDefault(d => d.Email == email);
+
+            if (existingUser != null)
+            {
+                Response.StatusCode = 400;
+                await Response.WriteAsync("This email already exists.");
+                return;
+            }
+
+            using (MD5 md5Hash = MD5.Create())
+            {
+                password = Hash.GetMd5Hash(md5Hash, password);
+            }
+
+            User user = new User
+            {
+                Email = email,
+                Password = password,
+                Role = "user",
+                Name = name,
+                Surname = surname
+            };
+
+            databaseContext.Add(user);
+            try
+            {
+                databaseContext.SaveChanges();
+            }
+            catch (DbUpdateException e)
+            {
+                Response.StatusCode = 400;
+                await Response.WriteAsync(e.StackTrace);
+            }
+
+            Response.StatusCode = 200;
+            await Response.WriteAsync("Succesfull");
+        }
+
+        [HttpPost("/authorization")]
+        public async Task Token(string email, string password, [FromServices]RoomWorldDatabaseContext databaseContext)
+        {
+            if (email == null || password == null)
+            {
+                Response.StatusCode = 400;
+                await Response.WriteAsync("Empty username or password.");
+                return;
+            }
+
+            using (MD5 md5Hash = MD5.Create())
+            {
+                password = Hash.GetMd5Hash(md5Hash, password);
+            }
+            User user = databaseContext.Users.FirstOrDefault(d => d.Email == email && d.Password == password);
+
+            var identity = GetIdentity(user);
             if (identity == null)
             {
                 Response.StatusCode = 400;
@@ -53,9 +109,8 @@ namespace RoomWorld.Controllers
             await Response.WriteAsync(JsonConvert.SerializeObject(response, new JsonSerializerSettings { Formatting = Formatting.Indented }));
         }
 
-        private ClaimsIdentity GetIdentity(string username, string password)
+        private ClaimsIdentity GetIdentity(User user)
         {
-            User user = users.FirstOrDefault(x => x.Email == username && x.Password == password);
             if (user != null)
             {
                 var claims = new List<Claim>
