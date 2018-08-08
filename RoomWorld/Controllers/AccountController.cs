@@ -11,12 +11,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using RoomWorld.Models;
+using RoomWorld.Repositories;
 
 namespace RoomWorld.Controllers
 {
     public class AccountController : Controller
     {
-
         [HttpPost("/registration")]
         public async Task Registration(string name, string surname, string email, string password, [FromServices]RoomWorldDatabaseContext databaseContext)
         {
