@@ -64,7 +64,7 @@ namespace RoomWorld.Controllers
             }
             User user = databaseContext.Users.FirstOrDefault(d => d.Email == email && d.Password == password);
 
-            var identity = GetIdentity(user);
+            var identity = userService.GetIdentity(user);
             if (identity == null)
             {
                 Response.StatusCode = 400;
@@ -92,22 +92,5 @@ namespace RoomWorld.Controllers
             await Response.WriteAsync(JsonConvert.SerializeObject(response, new JsonSerializerSettings { Formatting = Formatting.Indented }));
         }
 
-        private ClaimsIdentity GetIdentity(User user)
-        {
-            if (user != null)
-            {
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
-                    new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role)
-                };
-                ClaimsIdentity claimsIdentity =
-                new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
-                    ClaimsIdentity.DefaultRoleClaimType);
-                return claimsIdentity;
-            }
-
-            return null;
-        }
     }
 }
