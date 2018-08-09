@@ -13,6 +13,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using RoomWorld.Models;
+using RoomWorld.Repositories;
+using RoomWorld.Services;
 
 namespace RoomWorld
 {
@@ -27,7 +29,8 @@ namespace RoomWorld
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<RoomWorldDatabaseContext>();
+           
+            services.AddDbContext<DatabaseContext>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -45,7 +48,10 @@ namespace RoomWorld
                         ValidateIssuerSigningKey = true,
                     };
                 });
-
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped(typeof(IRepository<>), typeof(DataRepository<>));
+            
             services.AddMvc();
         }
 

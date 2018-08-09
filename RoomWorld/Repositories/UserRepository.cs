@@ -2,51 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using RoomWorld.Models;
 
 namespace RoomWorld.Repositories
 {
-    public class UserRepository : IRepository<User>
+    public class UserRepository : IUserRepository
     {
-        private RoomWorldDatabaseContext databaseContext;
+        private readonly DatabaseContext databaseContext;
 
-        public UserRepository()
+        public UserRepository(DatabaseContext databaseContext)
         {
-            this.databaseContext = new RoomWorldDatabaseContext();
+            this.databaseContext = databaseContext;
         }
-        public IEnumerable<User> GetAll()
+        public User GetUserByEmail(string email)
         {
-            return databaseContext.Users;
-        }
-
-        public User GetById(int id)
-        {
-            return databaseContext.Users.Find(id);
-        }
-
-        public void Insert(User user)
-        {
-            databaseContext.Users.Add(user);
-        }
-
-        public void Update(User user)
-        {
-            databaseContext.Entry(user).State = EntityState.Modified;
-        }
-
-        public void Delete(User user)
-        {
-            User existingUser = databaseContext.Users.Find(user.Id);
-            if (existingUser != null)
-            {
-                databaseContext.Users.Remove(user);
-            }
-        }
-
-        public void SaveChanges()
-        {
-            databaseContext.SaveChanges();
+            return databaseContext.Users.FirstOrDefault(s => s.Email == email);
         }
     }
 }

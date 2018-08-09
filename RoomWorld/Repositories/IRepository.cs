@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace RoomWorld.Repositories
 {
-    interface IRepository<T> where T : class 
+   public interface IRepository<T> where T : class 
     {
         IEnumerable<T> GetAll();
         T GetById(int id);

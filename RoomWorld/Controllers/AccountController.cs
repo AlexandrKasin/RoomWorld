@@ -12,23 +12,30 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using RoomWorld.Models;
 using RoomWorld.Repositories;
+using RoomWorld.Services;
 
 namespace RoomWorld.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController : ControllerBase
     {
-        [HttpPost("/registration")]
-        public async Task Registration(string name, string surname, string email, string password, [FromServices]RoomWorldDatabaseContext databaseContext)
+        private readonly IUserService userService;
+
+        public AccountController(IUserService userService)
         {
-            if (name == null || surname == null || email == null || password == null)
+            this.userService = userService;
+        }
+
+        [HttpPost("/registration")]
+        public async Task Registration(User user)
+        {
+            if (user.Name == null || user.Surname == null || user.Email == null || user.Password == null || user.PhoneNumber ==null)
             {
                 Response.StatusCode = 400;
                 await Response.WriteAsync("Some field are empty.");
                 return;
             }
 
-            User existingUser = databaseContext.Users.FirstOrDefault(d => d.Email == email);
-
+            User existingUser = userService.GetUserByEmail(user.Email);
             if (existingUser != null)
             {
                 Response.StatusCode = 400;
@@ -36,37 +43,13 @@ namespace RoomWorld.Controllers
                 return;
             }
 
-            using (MD5 md5Hash = MD5.Create())
-            {
-                password = Hash.GetMd5Hash(md5Hash, password);
-            }
-
-            User user = new User
-            {
-                Email = email,
-                Password = password,
-                Role = "user",
-                Name = name,
-                Surname = surname
-            };
-
-            databaseContext.Add(user);
-            try
-            {
-                databaseContext.SaveChanges();
-            }
-            catch (DbUpdateException e)
-            {
-                Response.StatusCode = 400;
-                await Response.WriteAsync(e.StackTrace);
-            }
-
+            userService.AddUser(user);
             Response.StatusCode = 200;
             await Response.WriteAsync("Succesfull");
         }
 
-        [HttpPost("/authorization")]
-        public async Task Token(string email, string password, [FromServices]RoomWorldDatabaseContext databaseContext)
+        [HttpPost("/token")]
+        public async Task Token(string email, string password, [FromServices]DatabaseContext databaseContext)
         {
             if (email == null || password == null)
             {

@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace RoomWorld.Models
 {
-    public class RoomWorldDatabaseContext : DbContext
+    public class DatabaseContext : DbContext
     {
         public DbSet<User> Users { get; set; }
 
-        public RoomWorldDatabaseContext()
+        public DatabaseContext()
         {
             Database.EnsureCreated();
         }

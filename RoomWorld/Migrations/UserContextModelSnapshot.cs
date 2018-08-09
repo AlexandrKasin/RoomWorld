@@ -7,7 +7,7 @@ using RoomWorld.Models;
 
 namespace RoomWorld.Migrations
 {
-    [DbContext(typeof(RoomWorldDatabaseContext))]
+    [DbContext(typeof(DatabaseContext))]
     partial class UserContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

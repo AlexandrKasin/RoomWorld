@@ -8,7 +8,7 @@ using RoomWorld.Models;
 
 namespace RoomWorld.Migrations
 {
-    [DbContext(typeof(RoomWorldDatabaseContext))]
+    [DbContext(typeof(DatabaseContext))]
     [Migration("20180808080035_AddUser")]
     partial class AddUser
     {
