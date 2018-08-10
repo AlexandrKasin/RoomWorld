@@ -8,7 +8,7 @@ namespace RoomWorld.Models
 {
     public class DatabaseContext : DbContext
     {
-        public DbSet<User> Users { get; set; }
+        public DbSet<User> User { get; set; }
 
         public DatabaseContext()
         {

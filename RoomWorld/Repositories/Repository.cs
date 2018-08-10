@@ -7,19 +7,19 @@ using RoomWorld.Models;
 
 namespace RoomWorld.Repositories
 {
-    public class DataRepository <T> : IRepository<T> where T : class 
+    public class Repository<T> : IRepository<T> where T : class 
     {
         private readonly DatabaseContext databaseContext;
         private DbSet<T> entities;
 
-        public DataRepository(DatabaseContext databaseContext)
+        public Repository(DatabaseContext databaseContext)
         {
             this.databaseContext = databaseContext;
             entities = databaseContext.Set<T>();
         }
-        public IEnumerable<T> GetAll()
+        public IQueryable<T> GetAll()
         {
-            return entities.AsEnumerable();
+            return entities.AsQueryable();
         }
 
         public T GetById(int id)

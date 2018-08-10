@@ -14,5 +14,7 @@ namespace RoomWorld.Services
         IEnumerable<User> GetAll();
         User GetUserByEmail(string email);
         ClaimsIdentity GetIdentity(User user);
+
+        string GetToken(string email, string password);
     }
 }
