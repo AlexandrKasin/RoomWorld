@@ -54,7 +54,7 @@ namespace RoomWorld.Services
 
         public User GetUserByEmail(string email)
         {
-            return repository.GetAll().First(t => t.Email == email);
+            return repository.GetAll().FirstOrDefault(t=>t.Email == email);
         }
 
         public ClaimsIdentity GetIdentity(User user)
