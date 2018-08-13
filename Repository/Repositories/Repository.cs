@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace RoomWorld.Repositories
     public class Repository<T> : IRepository<T> where T : class 
     {
         private readonly DatabaseContext databaseContext;
-        private DbSet<T> entities;
+        private readonly DbSet<T> entities;
 
         public Repository(DatabaseContext databaseContext)
         {
@@ -19,46 +20,46 @@ namespace RoomWorld.Repositories
         }
         public IQueryable<T> GetAll()
         {
-            return entities.AsQueryable();
+            return  entities.AsQueryable();
         }
 
-        public T GetById(int id)
+        public Task<T> GetByIdAsunc(int id)
         {
-            return entities.Find(id);
+            return entities.FindAsync(id);
         }
 
-        public void Insert(T entity)
-        {
-            if (entity == null)
-            {
-                throw new ArgumentNullException("entity");
-            }
-            entities.Add(entity);
-            databaseContext.SaveChanges();
-        }
-
-        public void Update(T entity)
+        public async Task InsertAsunc(T entity)
         {
             if (entity == null)
             {
                 throw new ArgumentNullException("entity");
             }
-            databaseContext.SaveChanges();
+            await entities.AddAsync(entity);
+            await databaseContext.SaveChangesAsync();
         }
 
-        public void Delete(T entity)
+        public async Task UpdateAsunc(T entity)
+        {
+            if (entity == null)
+            {
+                throw new ArgumentNullException("entity");
+            }
+            await databaseContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsunc(T entity)
         {
             if (entity == null)
             {
                 throw new ArgumentNullException("entity");
             }
             entities.Remove(entity);
-            databaseContext.SaveChanges();
+            await databaseContext.SaveChangesAsync();
         }
 
-        public void SaveChanges()
+        public async Task SaveChangesAsunc()
         {
-            databaseContext.SaveChanges();
+            await databaseContext.SaveChangesAsync();
         }
     }
 }

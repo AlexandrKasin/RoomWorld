@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using RoomWorld.Models;
 using RoomWorld.Repositories;
 using RoomWorld.Services;
+using Service;
+using Service.iServices;
+using Service.Services;
 
 namespace RoomWorld
 {
@@ -29,7 +25,6 @@ namespace RoomWorld
 
         public void ConfigureServices(IServiceCollection services)
         {
-           
             services.AddDbContext<DatabaseContext>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
@@ -51,6 +46,10 @@ namespace RoomWorld
             
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IRegistrationService, RegistrationService>();
+           
+
 
             services.AddMvc();
         }

@@ -1,20 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RoomWorld.Models;
 using RoomWorld.Services;
+using Service.iServices;
 
 namespace RoomWorld.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly IUserService userService;
+        private readonly ITokenService token;
+        private readonly IRegistrationService registration;
 
-        public AccountController(IUserService userService)
+        public AccountController(ITokenService token, IRegistrationService registration)
         {
-            this.userService = userService;
+            this.token = token;
+            this.registration = registration;
         }
 
         [HttpPost("/registration")]
@@ -22,7 +24,7 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                userService.AddUser(user);
+                await registration.RegistrateUserAsunc(user);
             }
             catch (Exception e)
             {
@@ -41,7 +43,7 @@ namespace RoomWorld.Controllers
             string response;
             try
             {
-                response = userService.GetToken(email, password);
+                response = await token.GetTokenAsunc(email, password);
             }
             catch (Exception e)
             {

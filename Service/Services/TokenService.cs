@@ -1,63 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using RoomWorld;
 using RoomWorld.Models;
-using RoomWorld.Repositories;
+using RoomWorld.Services;
+using Service.iServices;
 
-namespace RoomWorld.Services
+namespace Service
 {
-    public class UserService : IUserService
+    public class TokenService : ITokenService
     {
-        private readonly IRepository<User> repository;
-
-
-        public UserService(IRepository<User> repository)
+        private IUserService userService;
+        public TokenService(IUserService userService)
         {
-            this.repository = repository;
-        }
-        public void AddUser(User user)
-        {
-            if (user.Name == null || user.Surname == null || user.Email == null || user.Password == null || user.PhoneNumber == null)
-            {
-                throw new ArgumentNullException("Some field are empty.");
-            }
-
-            User existingUser = GetUserByEmail(user.Email);
-            if (existingUser != null)
-            {
-                throw new ArgumentException("This email already exists.");  
-            }
-            
-            user.Role = "User";
-            using (MD5 md5Hash = MD5.Create())
-            {
-                user.Password = Hash.GetMd5Hash(md5Hash, user.Password);
-            }
-            repository.Insert(user);
+            this.userService = userService;
         }
 
-        public User GetUserById(int id)
-        {
-            return repository.GetById(id);
-        }
-
-        public IEnumerable<User> GetAll()
-        {
-            return repository.GetAll();
-        }
-
-        public User GetUserByEmail(string email)
-        {
-            return repository.GetAll().FirstOrDefault(t=>t.Email == email);
-        }
-
-        public ClaimsIdentity GetIdentity(User user)
+        private ClaimsIdentity GetIdentity(User user)
         {
             if (user != null)
             {
@@ -75,22 +39,22 @@ namespace RoomWorld.Services
             return null;
         }
 
-        public string GetToken(string email, string password)
+        public async Task<string> GetTokenAsunc(string email, string password)
         {
             if (email == null || password == null)
             {
-               throw new ArgumentNullException("Empty username or password.");   
+                throw new ArgumentNullException("Empty username or password.");
             }
 
             using (MD5 md5Hash = MD5.Create())
             {
-                password = Hash.GetMd5Hash(md5Hash, password);
+                password = HashService.GetMd5Hash(md5Hash, password);
             }
-            User user = GetUserByEmail(email);
+            User user = await userService.GetUserByEmailAsunc(email);
 
             var identity = GetIdentity(user);
             if (identity == null || user.Password != password)
-            {         
+            {
                 throw new ArgumentException("Invalid username or password.");
             }
 
@@ -109,7 +73,7 @@ namespace RoomWorld.Services
                 access_token = encodedJwt,
                 username = identity.Name
             };
-            return (JsonConvert.SerializeObject(response, new JsonSerializerSettings { Formatting = Formatting.Indented })); 
+            return (JsonConvert.SerializeObject(response, new JsonSerializerSettings { Formatting = Formatting.Indented }));
         }
     }
 }

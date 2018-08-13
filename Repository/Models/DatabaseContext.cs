@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace RoomWorld.Models
 {
     public class DatabaseContext : DbContext
     {
         public DbSet<User> User { get; set; }
-
         public DatabaseContext()
         {
             Database.EnsureCreated();
@@ -17,8 +13,7 @@ namespace RoomWorld.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var connection = @"Data Source=WS-018-41\SQLEXPRESS;Initial Catalog=RoomWorld;Integrated Security=True";
-            optionsBuilder.UseSqlServer(connection);
+            optionsBuilder.UseSqlServer(@"Data Source=WS-018-41\SQLEXPRESS;Initial Catalog=RoomWorld;Persist Security Info=True;User ID=sa;Password=2831765");
         }
     }
 }
