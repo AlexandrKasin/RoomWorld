@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
+using Data.Entity;
+using Repository.Repositories;
 using RoomWorld;
-using RoomWorld.Models;
-using RoomWorld.Repositories;
 using RoomWorld.Services;
 using Service.iServices;
 

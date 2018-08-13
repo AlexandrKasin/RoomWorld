@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
-namespace RoomWorld.Models
+namespace Repository.Models
 {
     public class DatabaseContext : DbContext
     {

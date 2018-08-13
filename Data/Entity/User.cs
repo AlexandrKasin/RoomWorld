@@ -1,8 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Data.Entity;
-
-namespace RoomWorld.Models
+﻿namespace Data.Entity
 {
     public class User : BaseEntity
     {

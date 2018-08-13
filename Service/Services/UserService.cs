@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Security.Cryptography;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using Data.Entity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
-using RoomWorld.Models;
-using RoomWorld.Repositories;
+using Repository.Repositories;
+using RoomWorld.Services;
 
-namespace RoomWorld.Services
+namespace Service.Services
 {
     public class UserService : IUserService
     {

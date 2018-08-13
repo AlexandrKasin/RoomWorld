@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using RoomWorld.Models;
+using Repository.Models;
 
-namespace RoomWorld.Repositories
+namespace Repository.Repositories
 {
     public class Repository<T> : IRepository<T> where T : class 
     {

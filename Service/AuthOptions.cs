@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
-namespace RoomWorld
+namespace Service
 {
     public class AuthOptions
     {

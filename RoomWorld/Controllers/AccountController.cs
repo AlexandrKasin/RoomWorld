@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Data.Entity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using RoomWorld.Models;
-using RoomWorld.Services;
 using Service.iServices;
 
 namespace RoomWorld.Controllers

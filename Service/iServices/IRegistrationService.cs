@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using RoomWorld.Models;
+﻿using System.Threading.Tasks;
+using Data.Entity;
 
 namespace Service.iServices
 {

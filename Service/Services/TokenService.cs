@@ -4,10 +4,10 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using Data.Entity;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using RoomWorld;
-using RoomWorld.Models;
 using RoomWorld.Services;
 using Service.iServices;
 
