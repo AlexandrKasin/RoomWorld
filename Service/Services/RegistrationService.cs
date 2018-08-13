@@ -39,7 +39,7 @@ namespace Service.Services
             user.Role = "User";
             using (MD5 md5Hash = MD5.Create())
             {
-                user.Password = HashService.GetMd5Hash(md5Hash, user.Password);
+                user.Password = Hash.GetMd5Hash(md5Hash, user.Password);
             }
             await repository.InsertAsunc(user);
         }

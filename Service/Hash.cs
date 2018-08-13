@@ -3,7 +3,7 @@ using System.Text;
 
 namespace RoomWorld
 {
-    public class HashService
+    public class Hash
     {
         public static string GetMd5Hash(MD5 md5Hash, string input)
         {

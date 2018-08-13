@@ -48,7 +48,7 @@ namespace Service
 
             using (MD5 md5Hash = MD5.Create())
             {
-                password = HashService.GetMd5Hash(md5Hash, password);
+                password = Hash.GetMd5Hash(md5Hash, password);
             }
             User user = await userService.GetUserByEmailAsunc(email);
 
