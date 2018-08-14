@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Data.Entity;
 
-namespace RoomWorld.Services
+namespace Service.iServices
 {
     public interface IUserService
     {
@@ -11,7 +11,6 @@ namespace RoomWorld.Services
         IQueryable<User> GetAll();
         Task UpdateUserAsunc(User user);
         Task DeleteUserAsunc(User user);
-        Task<User> GetUserByEmailAsunc(string email);
     
     }
 }

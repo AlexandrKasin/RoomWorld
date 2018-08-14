@@ -1,9 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Data.Entity;
 using Microsoft.EntityFrameworkCore;
 using Repository.Repositories;
-using RoomWorld.Services;
+using Service.iServices;
 
 namespace Service.Services
 {
@@ -40,13 +43,6 @@ namespace Service.Services
         public async Task DeleteUserAsunc(User user)
         {
             await repository.DeleteAsunc(user);
-        }
-
-        public async Task<User> GetUserByEmailAsunc(string email)
-        {
-            return await repository.GetAll().FirstOrDefaultAsync(t=>t.Email == email);
-        }
-
-       
+        } 
     }
 }

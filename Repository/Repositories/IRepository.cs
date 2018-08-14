@@ -1,9 +1,10 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Data.Entity;
 
 namespace Repository.Repositories
 {
-    public interface IRepository<T> where T : class 
+    public interface IRepository<T> where T : BaseEntity
     {
         IQueryable<T> GetAll();
         Task<T> GetByIdAsunc(int id);

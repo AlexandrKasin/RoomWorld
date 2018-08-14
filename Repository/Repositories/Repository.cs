@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Entity;
 using Microsoft.EntityFrameworkCore;
 using Repository.Models;
 
 namespace Repository.Repositories
 {
-    public class Repository<T> : IRepository<T> where T : class 
+    public class Repository<T> : IRepository<T> where T : BaseEntity
     {
         private readonly DatabaseContext databaseContext;
         private readonly DbSet<T> entities;

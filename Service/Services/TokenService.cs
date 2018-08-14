@@ -5,20 +5,21 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Repository.Repositories;
 using RoomWorld;
-using RoomWorld.Services;
 using Service.iServices;
 
 namespace Service
 {
     public class TokenService : ITokenService
     {
-        private IUserService userService;
-        public TokenService(IUserService userService)
+        private readonly IRepository<User> repository;
+        public TokenService(IRepository<User> repository)
         {
-            this.userService = userService;
+            this.repository = repository;
         }
 
         private ClaimsIdentity GetIdentity(User user)
@@ -50,7 +51,7 @@ namespace Service
             {
                 password = Hash.GetMd5Hash(md5Hash, password);
             }
-            User user = await userService.GetUserByEmailAsunc(email);
+            User user = await repository.GetAll().FirstOrDefaultAsync(t => t.Email == email);
 
             var identity = GetIdentity(user);
             if (identity == null || user.Password != password)
