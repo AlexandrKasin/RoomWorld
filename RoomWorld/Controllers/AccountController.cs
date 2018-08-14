@@ -9,21 +9,21 @@ namespace RoomWorld.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly ITokenService token;
-        private readonly IRegistrationService registration;
+        private readonly ITokenService _tokenService;
+        private readonly IRegistrationService _registrationService;
 
-        public AccountController(ITokenService token, IRegistrationService registration)
+        public AccountController(ITokenService tokenService, IRegistrationService registrationService)
         {
-            this.token = token;
-            this.registration = registration;
+            _tokenService = tokenService;
+            _registrationService = registrationService;
         }
 
-        [HttpPost("/registration")]
+        [HttpPost("/registrationService")]
         public async Task Registration(User user)
         {
             try
             {
-                await registration.RegistrateUserAsunc(user);
+                await _registrationService.RegistrateUserAsunc(user);
             }
             catch (Exception e)
             {
@@ -36,13 +36,13 @@ namespace RoomWorld.Controllers
         }
 
 
-        [HttpPost("/token")]
+        [HttpPost("/tokenService")]
         public async Task Token(string email, string password)
         {
             string response;
             try
             {
-                response = await token.GetTokenAsunc(email, password);
+                response = await _tokenService.GetTokenAsunc(email, password);
             }
             catch (Exception e)
             {

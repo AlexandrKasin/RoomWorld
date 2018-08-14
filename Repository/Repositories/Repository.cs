@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Data.Entity;
 using Microsoft.EntityFrameworkCore;
@@ -9,56 +11,56 @@ namespace Repository.Repositories
 {
     public class Repository<T> : IRepository<T> where T : BaseEntity
     {
-        private readonly DatabaseContext databaseContext;
-        private readonly DbSet<T> entities;
+        private readonly DatabaseContext _databaseContext;
+        private readonly DbSet<T> _entities;
 
         public Repository(DatabaseContext databaseContext)
         {
-            this.databaseContext = databaseContext;
-            entities = databaseContext.Set<T>();
+            _databaseContext = databaseContext;
+            _entities = databaseContext.Set<T>();
         }
-        public IQueryable<T> GetAll()
+        public async Task<ICollection<T>> GetAllAsync(Expression<Func<T, bool>> predicate)
         {
-            return  entities.AsQueryable();
+            return await _entities.AsQueryable().Where(predicate).ToListAsync();
         }
 
-        public async Task<T> GetByIdAsunc(int id)
+        public async Task<T> GetByIdAsync(int id)
         {
-            return await entities.FindAsync(id);
+            return await _entities.FindAsync(id);
         }
 
-        public async Task InsertAsunc(T entity)
+        public async Task InsertAsync(T entity)
         {
             if (entity == null)
             {
                 throw new ArgumentNullException("entity");
             }
-            await entities.AddAsync(entity);
-            await databaseContext.SaveChangesAsync();
+            await _entities.AddAsync(entity);
+            await _databaseContext.SaveChangesAsync();
         }
 
-        public async Task UpdateAsunc(T entity)
+        public async Task UpdateAsync(T entity)
         {
             if (entity == null)
             {
                 throw new ArgumentNullException("entity");
             }
-            await databaseContext.SaveChangesAsync();
+            await _databaseContext.SaveChangesAsync();
         }
 
-        public async Task DeleteAsunc(T entity)
+        public async Task DeleteAsync(T entity)
         {
             if (entity == null)
             {
                 throw new ArgumentNullException("entity");
             }
-            entities.Remove(entity);
-            await databaseContext.SaveChangesAsync();
+            _entities.Remove(entity);
+            await _databaseContext.SaveChangesAsync();
         }
 
-        public async Task SaveChangesAsunc()
+        public async Task SaveChangesAsync()
         {
-            await databaseContext.SaveChangesAsync();
+            await _databaseContext.SaveChangesAsync();
         }
     }
 }

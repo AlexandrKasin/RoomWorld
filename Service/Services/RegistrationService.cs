@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Data.Entity;
-using Microsoft.EntityFrameworkCore;
 using Repository.Repositories;
 using RoomWorld;
 using Service.iServices;
@@ -11,11 +12,11 @@ namespace Service.Services
 {
     public class RegistrationService : IRegistrationService
     {
-        private readonly IRepository<User> repository;
+        private readonly IRepository<User> _repositoryService;
 
-        public RegistrationService(IRepository<User> repository)
+        public RegistrationService(IRepository<User> repositoryService)
         {
-            this.repository = repository;
+            _repositoryService = repositoryService;
         }
 
         public async Task RegistrateUserAsunc(User user)
@@ -25,8 +26,8 @@ namespace Service.Services
                 throw new ArgumentNullException("Some field are empty.");
             }
             
-            User existingUser = await repository.GetAll().FirstOrDefaultAsync(t => t.Email == user.Email);
-            if (existingUser != null)
+            ICollection<User> existingUser = await _repositoryService.GetAllAsync(t => t.Email == user.Email);
+            if (existingUser.First() != null)
             {
                 throw new ArgumentException("This email already exists.");  
             }
@@ -36,7 +37,7 @@ namespace Service.Services
             {
                 user.Password = Hash.GetMd5Hash(md5Hash, user.Password);
             }
-            await repository.InsertAsunc(user);
+            await _repositoryService.InsertAsync(user);
         }
     }
 }
