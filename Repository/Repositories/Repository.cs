@@ -22,9 +22,9 @@ namespace Repository.Repositories
             return  entities.AsQueryable();
         }
 
-        public Task<T> GetByIdAsunc(int id)
+        public async Task<T> GetByIdAsunc(int id)
         {
-            return entities.FindAsync(id);
+            return await entities.FindAsync(id);
         }
 
         public async Task InsertAsunc(T entity)
