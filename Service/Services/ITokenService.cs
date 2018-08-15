@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Service.iServices
+namespace Service.Services
 {
     public interface ITokenService
     {

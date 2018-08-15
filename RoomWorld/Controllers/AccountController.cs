@@ -3,10 +3,11 @@ using System.Threading.Tasks;
 using Data.Entity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Service.iServices;
+using Service.Services;
 
 namespace RoomWorld.Controllers
 {
+    
     public class AccountController : Controller
     {
         private readonly ITokenService _tokenService;
@@ -18,12 +19,15 @@ namespace RoomWorld.Controllers
             _registrationService = registrationService;
         }
 
-        [HttpPost("/registrationService")]
+        [HttpPost("/registration")]
         public async Task Registration(User user)
         {
+            string responce;
+            var password = user.Password;
             try
             {
                 await _registrationService.RegistrateUserAsunc(user);
+                responce = await _tokenService.GetTokenAsunc(user.Email, password);
             }
             catch (Exception e)
             {
@@ -32,17 +36,20 @@ namespace RoomWorld.Controllers
                 return;
             }
             Response.StatusCode = 200;
-            await Response.WriteAsync("Succesfull");
+            Response.ContentType = "application/json";
+            await Response.WriteAsync(responce);
         }
 
 
-        [HttpPost("/tokenService")]
+        [HttpPost("/token")]
         public async Task Token(string email, string password)
-        {
-            string response;
+        {            
             try
             {
-                response = await _tokenService.GetTokenAsunc(email, password);
+                var response = await _tokenService.GetTokenAsunc(email, password);
+                Response.StatusCode = 200;
+                Response.ContentType = "application/json";
+                await Response.WriteAsync(response);
             }
             catch (Exception e)
             {
@@ -50,9 +57,7 @@ namespace RoomWorld.Controllers
                 await Response.WriteAsync(e.Message);
                 return;
             }
-
-            Response.ContentType = "application/json";
-            await Response.WriteAsync(response);
+           
         }
 
         

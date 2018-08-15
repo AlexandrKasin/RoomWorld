@@ -3,40 +3,37 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Data.Entity;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Repository.Repositories;
-using Service.iServices;
 
 namespace Service.Services
 {
     public class TokenService : ITokenService
     {
         private readonly IRepository<User> _repository;
-        public TokenService(IRepository<User> repository)
+
+        private readonly IHashMd5Service _hashMd5Service;
+        public TokenService(IRepository<User> repository, IHashMd5Service hashMd5Service)
         {
             _repository = repository;
+            _hashMd5Service = hashMd5Service;
         }
 
         private ClaimsIdentity GetIdentity(User user)
         {
-            if (user != null)
+            if (user == null) return null;
+            var claims = new List<Claim>
             {
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
-                    new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role)
-                };
-                ClaimsIdentity claimsIdentity =
-                    new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
-                        ClaimsIdentity.DefaultRoleClaimType);
-                return claimsIdentity;
-            }
-
-            return null;
+                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role)
+            };
+            var claimsIdentity =
+                new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
+                    ClaimsIdentity.DefaultRoleClaimType);
+            return claimsIdentity;
         }
 
         public async Task<string> GetTokenAsunc(string email, string password)
@@ -45,13 +42,10 @@ namespace Service.Services
             {
                 throw new ArgumentNullException("Empty username or password.");
             }
+            password = _hashMd5Service.GetMd5Hash(password);
 
-            using (MD5 md5Hash = MD5.Create())
-            {
-                password = Hash.GetMd5Hash(md5Hash, password);
-            }
-            ICollection<User> users = await _repository.GetAllAsync(t => t.Email == email);
-            User user = users.First();
+            var users = await _repository.GetAllAsync(t => t.Email == email);
+            var user = users.First();
 
             var identity = GetIdentity(user);
             if (identity == null || user.Password != password)
@@ -61,11 +55,11 @@ namespace Service.Services
 
             var now = DateTime.UtcNow;
             var jwt = new JwtSecurityToken(
-                issuer: AuthOptions.ISSUER,
-                audience: AuthOptions.AUDIENCE,
+                issuer: AuthOptions.Issuer,
+                audience: AuthOptions.Audience,
                 notBefore: now,
                 claims: identity.Claims,
-                expires: now.Add(TimeSpan.FromMinutes(AuthOptions.LIFETIME)),
+                expires: now.Add(TimeSpan.FromMinutes(AuthOptions.Lifetime)),
                 signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 

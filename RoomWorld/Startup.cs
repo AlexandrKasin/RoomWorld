@@ -9,7 +9,6 @@ using Microsoft.IdentityModel.Tokens;
 using Repository.Models;
 using Repository.Repositories;
 using Service;
-using Service.iServices;
 using Service.Services;
 
 namespace RoomWorld
@@ -37,9 +36,9 @@ namespace RoomWorld
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true, 
-                        ValidIssuer = AuthOptions.ISSUER,
+                        ValidIssuer = AuthOptions.Issuer,
                         ValidateAudience = true,
-                        ValidAudience = AuthOptions.AUDIENCE,
+                        ValidAudience = AuthOptions.Audience,
                         ValidateLifetime = true,
                         IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
                         ValidateIssuerSigningKey = true,
@@ -50,6 +49,7 @@ namespace RoomWorld
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IRegistrationService, RegistrationService>();
+            services.AddScoped<IHashMd5Service, HashMd5Service>();
            
 
 

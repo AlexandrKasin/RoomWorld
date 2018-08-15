@@ -1,42 +1,34 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Data.Entity;
 using Repository.Repositories;
-using RoomWorld;
-using Service.iServices;
 
 namespace Service.Services
 {
     public class RegistrationService : IRegistrationService
     {
         private readonly IRepository<User> _repositoryService;
+        private readonly IHashMd5Service _hashMd5Service;
 
-        public RegistrationService(IRepository<User> repositoryService)
+        public RegistrationService(IRepository<User> repositoryService, IHashMd5Service hashMd5Service)
         {
             _repositoryService = repositoryService;
+            _hashMd5Service = hashMd5Service;
         }
 
         public async Task RegistrateUserAsunc(User user)
         {
-            if (user.Name == null || user.Surname == null || user.Email == null || user.Password == null || user.PhoneNumber == null)
-            {
-                throw new ArgumentNullException("Some field are empty.");
-            }
+            user.Role = Role.User.ToString();
+            Validator.ValidateObject(user, new ValidationContext(user));
             
-            ICollection<User> existingUser = await _repositoryService.GetAllAsync(t => t.Email == user.Email);
-            if (existingUser.First() != null)
-            {
+            var exists = (await _repositoryService.GetAllAsync(t => t.Email == user.Email)).Any();
+            if (exists) {
                 throw new ArgumentException("This email already exists.");  
             }
             
-            user.Role = "User";
-            using (MD5 md5Hash = MD5.Create())
-            {
-                user.Password = Hash.GetMd5Hash(md5Hash, user.Password);
-            }
+            user.Password = _hashMd5Service.GetMd5Hash(user.Password);
             await _repositoryService.InsertAsync(user);
         }
     }

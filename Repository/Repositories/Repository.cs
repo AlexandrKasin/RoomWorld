@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -12,49 +11,41 @@ namespace Repository.Repositories
     public class Repository<T> : IRepository<T> where T : BaseEntity
     {
         private readonly DatabaseContext _databaseContext;
-        private readonly DbSet<T> _entities;
+        private readonly DbSet<T> _entitySet;
 
         public Repository(DatabaseContext databaseContext)
         {
             _databaseContext = databaseContext;
-            _entities = databaseContext.Set<T>();
+            _entitySet = databaseContext.Set<T>();
         }
-        public async Task<ICollection<T>> GetAllAsync(Expression<Func<T, bool>> predicate)
+
+        public async Task<IQueryable<T>> GetAllAsync(Expression<Func<T, bool>> predicate)
         {
-            return await _entities.AsQueryable().Where(predicate).ToListAsync();
+            return await Task.Run(() => _entitySet.Where(predicate));
         }
 
         public async Task<T> GetByIdAsync(int id)
         {
-            return await _entities.FindAsync(id);
+            return await _entitySet.FindAsync(id);
         }
 
         public async Task InsertAsync(T entity)
         {
-            if (entity == null)
-            {
-                throw new ArgumentNullException("entity");
-            }
-            await _entities.AddAsync(entity);
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+            await _entitySet.AddAsync(entity);
             await _databaseContext.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(T entity)
         {
-            if (entity == null)
-            {
-                throw new ArgumentNullException("entity");
-            }
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
             await _databaseContext.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(T entity)
         {
-            if (entity == null)
-            {
-                throw new ArgumentNullException("entity");
-            }
-            _entities.Remove(entity);
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+            _entitySet.Remove(entity);
             await _databaseContext.SaveChangesAsync();
         }
 

@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Data.Entity;
 
-namespace Service.iServices
+namespace Service.Services
 {
     public interface IRegistrationService
     {

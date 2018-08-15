@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace RoomWorld.Migrations
+namespace Repository.Migrations
 {
     public partial class AddUserMigr : Migration
     {

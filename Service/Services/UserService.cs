@@ -4,7 +4,6 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Data.Entity;
 using Repository.Repositories;
-using Service.iServices;
 
 namespace Service.Services
 {
