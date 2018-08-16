@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Repository.Models;
 using Repository.Repositories;
-using Service;
 using Service.Services;
 
 namespace RoomWorld
@@ -26,7 +26,7 @@ namespace RoomWorld
         {
             services.AddDbContext<DatabaseContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
+            
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -36,11 +36,11 @@ namespace RoomWorld
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true, 
-                        ValidIssuer = AuthOptions.Issuer,
+                        ValidIssuer = Configuration["AuthOption:Issuer"],
                         ValidateAudience = true,
-                        ValidAudience = AuthOptions.Audience,
+                        ValidAudience = Configuration["AuthOption:Audience"],
                         ValidateLifetime = true,
-                        IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["AuthOption:Key"])),
                         ValidateIssuerSigningKey = true,
                     };
                 });

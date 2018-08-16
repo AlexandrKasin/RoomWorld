@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Data.Entity;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services;
 
@@ -20,44 +19,34 @@ namespace RoomWorld.Controllers
         }
 
         [HttpPost("/registration")]
-        public async Task Registration(User user)
+        public async Task<IActionResult> Registration(User user)
         {
-            string responce;
-            var password = user.Password;
             try
             {
+                var password = user.Password;
                 await _registrationService.RegistrateUserAsunc(user);
-                responce = await _tokenService.GetTokenAsunc(user.Email, password);
+                var responce = await _tokenService.GetTokenAsunc(user.Email, password);
+                return Ok(responce);
             }
             catch (Exception e)
             {
-                Response.StatusCode = 400;
-                await Response.WriteAsync(e.Message);
-                return;
+                return BadRequest(e.Message);
             }
-            Response.StatusCode = 200;
-            Response.ContentType = "application/json";
-            await Response.WriteAsync(responce);
         }
 
 
         [HttpPost("/token")]
-        public async Task Token(string email, string password)
+        public async Task<IActionResult> Token(string email, string password)
         {            
             try
             {
                 var response = await _tokenService.GetTokenAsunc(email, password);
-                Response.StatusCode = 200;
-                Response.ContentType = "application/json";
-                await Response.WriteAsync(response);
+                return Ok(response);
             }
             catch (Exception e)
             {
-                Response.StatusCode = 400;
-                await Response.WriteAsync(e.Message);
-                return;
+                return BadRequest(e.Message);
             }
-           
         }
 
         

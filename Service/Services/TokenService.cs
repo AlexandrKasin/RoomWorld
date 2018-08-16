@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Data.Entity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 using Repository.Repositories;
 
 namespace Service.Services
@@ -16,10 +17,13 @@ namespace Service.Services
         private readonly IRepository<User> _repository;
 
         private readonly IHashMd5Service _hashMd5Service;
-        public TokenService(IRepository<User> repository, IHashMd5Service hashMd5Service)
+
+        private readonly IConfiguration _configuration;
+        public TokenService(IRepository<User> repository, IHashMd5Service hashMd5Service, IConfiguration configuration)
         {
             _repository = repository;
             _hashMd5Service = hashMd5Service;
+            _configuration = configuration;
         }
 
         private ClaimsIdentity GetIdentity(User user)
@@ -36,17 +40,16 @@ namespace Service.Services
             return claimsIdentity;
         }
 
-        public async Task<string> GetTokenAsunc(string email, string password)
+        public async Task<Token> GetTokenAsunc(string email, string password)
         {
             if (email == null || password == null)
             {
-                throw new ArgumentNullException("Empty username or password.");
+                throw new ArgumentNullException(nameof(email));
             }
             password = _hashMd5Service.GetMd5Hash(password);
 
-            var users = await _repository.GetAllAsync(t => t.Email == email);
-            var user = users.First();
-
+            var user = await (await _repository.GetAllAsync(t => t.Email == email)).FirstOrDefaultAsync();
+            
             var identity = GetIdentity(user);
             if (identity == null || user.Password != password)
             {
@@ -55,20 +58,20 @@ namespace Service.Services
 
             var now = DateTime.UtcNow;
             var jwt = new JwtSecurityToken(
-                issuer: AuthOptions.Issuer,
-                audience: AuthOptions.Audience,
+                issuer: _configuration["AuthOption:Issuer"],
+                audience: _configuration["AuthOption:Audience"],
                 notBefore: now,
                 claims: identity.Claims,
-                expires: now.Add(TimeSpan.FromMinutes(AuthOptions.Lifetime)),
-                signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+                expires: now.Add(TimeSpan.FromMinutes(Convert.ToInt32(_configuration["AuthOption:Lifetime"]))),
+                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["AuthOption:Key"])), SecurityAlgorithms.HmacSha256));
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-
-            var response = new
+            
+            var response = new Token
             {
-                access_token = encodedJwt,
-                username = identity.Name
+                AccessToken = encodedJwt,
+                Username = identity.Name
             };
-            return (JsonConvert.SerializeObject(response, new JsonSerializerSettings { Formatting = Formatting.Indented }));
+            return response;
         }
     }
 }

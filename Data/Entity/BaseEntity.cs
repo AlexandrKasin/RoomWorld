@@ -17,9 +17,9 @@ namespace Data.Entity
         [DataType(DataType.DateTime)]
         public DateTime? ModifiedDate { get; set; }
 
-        public string CreatedBy { get; set; }
+        public long CreatedBy { get; set; }
 
-        public string ModifiedBy { get; set; }
+        public long? ModifiedBy { get; set; }
 
 
     }
