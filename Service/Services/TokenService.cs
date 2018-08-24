@@ -48,7 +48,7 @@ namespace Service.Services
             }
             password = _hashMd5Service.GetMd5Hash(password);
 
-            var user = await (await _repository.GetAllAsync(t => t.Email == email)).FirstOrDefaultAsync();
+            var user = await (await _repository.GetAllAsync(t => t.Email == email)).FirstAsync();
             
             var identity = GetIdentity(user);
             if (identity == null || user.Password != password)

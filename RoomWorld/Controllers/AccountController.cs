@@ -7,6 +7,7 @@ using Service.Services;
 namespace RoomWorld.Controllers
 {
     
+   [ApiController]
     public class AccountController : Controller
     {
         private readonly ITokenService _tokenService;
@@ -36,12 +37,16 @@ namespace RoomWorld.Controllers
 
 
         [HttpPost("/token")]
-        public async Task<IActionResult> Token(string email, string password)
-        {            
+        public async Task<IActionResult> Token(Authorize authorize)
+        {
             try
             {
-                var response = await _tokenService.GetTokenAsunc(email, password);
+                var response = await _tokenService.GetTokenAsunc(authorize.Email, authorize.Password);
                 return Ok(response);
+            }
+            catch (ArgumentException)
+            {
+                return Unauthorized();
             }
             catch (Exception e)
             {

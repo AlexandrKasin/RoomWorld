@@ -24,7 +24,6 @@ namespace Service.Services
             user.Role = Role.User.ToString();
             var systemUser = await _repositoryService.GetAllAsync(t=>t.Email == "system@admin.com").Result.FirstAsync();
             user.CreatedBy = systemUser.Id;
-            Validator.ValidateObject(user, new ValidationContext(user));
             
             var exists = (await _repositoryService.GetAllAsync(t => t.Email == user.Email)).Any();
             if (exists)

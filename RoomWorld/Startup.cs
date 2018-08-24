@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -50,10 +51,19 @@ namespace RoomWorld
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IRegistrationService, RegistrationService>();
             services.AddScoped<IHashMd5Service, HashMd5Service>();
-           
 
 
-            services.AddMvc();
+            services.AddCors(o => o.AddPolicy("Allow-Origin", builder =>
+            {
+                builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+            }));
+            services.Configure<MvcOptions>(options =>
+            {
+                options.Filters.Add(new CorsAuthorizationFilterFactory("Allow-Origin"));
+            });
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
