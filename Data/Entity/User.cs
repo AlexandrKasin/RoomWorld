@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Data.Entity
 {
@@ -23,6 +24,6 @@ namespace Data.Entity
         [Required(ErrorMessage = "PhoneNumber is required")]
         public string PhoneNumber { get; set; }
 
-  
+        public ICollection<Flat> Flats { get; set; } = new List<Flat>();
     }
 }

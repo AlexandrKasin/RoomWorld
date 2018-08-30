@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository.Models;
 
 namespace Repository.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20180830112157_CreateFlat")]
+    partial class CreateFlat
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,8 +85,6 @@ namespace Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("Accommodates");
-
                     b.Property<double>("Cost");
 
                     b.Property<long>("CreatedBy");
@@ -101,17 +101,9 @@ namespace Repository.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<double>("Size");
-
-                    b.Property<string>("SpaceOffered");
-
-                    b.Property<long?>("UserId");
-
                     b.HasKey("Id");
 
                     b.HasIndex("LocationId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Flat");
                 });
@@ -134,11 +126,11 @@ namespace Repository.Migrations
 
                     b.Property<DateTime?>("ModifiedDate");
 
-                    b.Property<int>("NumberFlat");
-
                     b.Property<int>("NumberHouse");
 
                     b.Property<int>("NumberHouseBlock");
+
+                    b.Property<int>("Numberflat");
 
                     b.Property<string>("Sity");
 
@@ -203,10 +195,6 @@ namespace Repository.Migrations
                     b.HasOne("Data.Entity.Location", "Location")
                         .WithMany("Flat")
                         .HasForeignKey("LocationId");
-
-                    b.HasOne("Data.Entity.User", "User")
-                        .WithMany("Flats")
-                        .HasForeignKey("UserId");
                 });
 #pragma warning restore 612, 618
         }

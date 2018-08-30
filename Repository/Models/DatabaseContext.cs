@@ -8,6 +8,11 @@ namespace Repository.Models
     public sealed class DatabaseContext : DbContext
     {
         public DbSet<User> User { get; set; }
+        public DbSet<Amenties> Amentiese { get; set; }
+        public DbSet<Extras> Extrase { get; set; }
+        public DbSet<Location> Location { get; set; }
+        public DbSet<Flat> Flat { get; set; }
+
         public DatabaseContext(DbContextOptions options) : base(options)
         {
             Database.EnsureCreated();

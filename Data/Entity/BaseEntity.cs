@@ -8,7 +8,7 @@ namespace Data.Entity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public long Id { get; protected set; }
+        public virtual long Id { get; protected set; }
 
 
         [DataType(DataType.DateTime)]

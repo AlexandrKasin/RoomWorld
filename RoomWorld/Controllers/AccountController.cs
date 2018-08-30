@@ -6,8 +6,7 @@ using Service.Services;
 
 namespace RoomWorld.Controllers
 {
-    
-   [ApiController]
+    [ApiController]
     public class AccountController : Controller
     {
         private readonly ITokenService _tokenService;
@@ -28,6 +27,10 @@ namespace RoomWorld.Controllers
                 await _registrationService.RegistrateUserAsunc(user);
                 var responce = await _tokenService.GetTokenAsunc(user.Email, password);
                 return Ok(responce);
+            }
+            catch (ArgumentException)
+            {
+                return Unauthorized();
             }
             catch (Exception e)
             {
@@ -53,7 +56,5 @@ namespace RoomWorld.Controllers
                 return BadRequest(e.Message);
             }
         }
-
-        
     }
 }
