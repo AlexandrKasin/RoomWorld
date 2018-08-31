@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Data.Entity
 {
@@ -10,6 +11,7 @@ namespace Data.Entity
         public int NumberHouseBlock { get; set; }
         public int NumberFlat { get; set; }
         public string GpsPoint { get; set; }
+
         public ICollection<Flat> Flat { get; set; } = new List<Flat>();
     }
 }

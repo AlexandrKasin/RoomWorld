@@ -77,7 +77,7 @@ namespace Repository.Migrations
                     b.ToTable("Extrase");
                 });
 
-            modelBuilder.Entity("Data.Entity.Flat", b =>
+            modelBuilder.Entity("Data.Entity.FlatEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -186,19 +186,19 @@ namespace Repository.Migrations
 
             modelBuilder.Entity("Data.Entity.Amenties", b =>
                 {
-                    b.HasOne("Data.Entity.Flat", "Flat")
+                    b.HasOne("Data.Entity.FlatEntity", "Flat")
                         .WithMany("Amentieses")
                         .HasForeignKey("FlatId");
                 });
 
             modelBuilder.Entity("Data.Entity.Extras", b =>
                 {
-                    b.HasOne("Data.Entity.Flat", "Flat")
+                    b.HasOne("Data.Entity.FlatEntity", "Flat")
                         .WithMany("Extrases")
                         .HasForeignKey("FlatId");
                 });
 
-            modelBuilder.Entity("Data.Entity.Flat", b =>
+            modelBuilder.Entity("Data.Entity.FlatEntity", b =>
                 {
                     b.HasOne("Data.Entity.Location", "Location")
                         .WithMany("Flat")

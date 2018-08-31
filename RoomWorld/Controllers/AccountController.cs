@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Data.Entity;
+using Data;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services;
 
@@ -19,7 +19,7 @@ namespace RoomWorld.Controllers
         }
 
         [HttpPost("/registration")]
-        public async Task<IActionResult> Registration(User user)
+        public async Task<IActionResult> Registration(UserModel user)
         {
             try
             {
