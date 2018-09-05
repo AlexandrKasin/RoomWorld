@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -27,9 +28,9 @@ namespace Service.Services
             return await _repository.GetByIdAsync(id);
         }
 
-        public async Task<IQueryable<Flat>> GetAllAsync(Expression<Func<Flat, bool>> predicate)
+        public async Task<IQueryable<Flat>> GetAllAsync(Expression<Func<Flat, bool>> predicate, params Expression<Func<Flat, object>>[] includeParams)
         {
-            return await _repository.GetAllAsync(predicate);
+            return await _repository.GetAllAsync(predicate,includeParams);
         }
 
         public async Task UpdateFlatAsunc(Flat flat)

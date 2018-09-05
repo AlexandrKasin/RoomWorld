@@ -5,13 +5,13 @@ namespace RoomWorld
 {
     public class FlatConfig
     {
-        [Required]
+        //[Required]
         public string Country { get; set; }
 
-        [Required]
+        //[Required]
         public string City { get; set; }
 
-        [Required]
+        //[Required]
         public int Accommodates { get; set; }
 
        /* [Required]

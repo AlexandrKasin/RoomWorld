@@ -19,7 +19,7 @@ namespace RoomWorld.Controllers
         public FlatController(IFlatService flatService, IUserService userService)
         {
             _flatService = flatService;
-            _userService = userService;
+            _userService = userService;       
         }
 
         [HttpPost("/add-flat")]
@@ -28,7 +28,7 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                var email = this.User.Identities.First().Name;
+                var email = User.Identities.First().Name;
                 var user = await _userService.GetAllAsync((t => t.Email == email)).Result.FirstAsync();
                 flat.User = user;
                 await _flatService.AddFlatAsunc(flat);
@@ -46,9 +46,11 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                var flats = await _flatService.GetAllAsync(t =>
+                /*var flats = await _flatService.GetAllAsync(t =>
                         t.Location.Country == flatConfig.Country && t.Location.Sity == flatConfig.City && t.Accommodates >= flatConfig.Accommodates).Result
-                    .ToListAsync();
+                    .ToListAsync();*/
+
+                var flats = await _flatService.GetAllAsync(null, x => x.Location, x => x.Amentieses, x => x.Extrases);
                 return Ok(flats);
             }
             catch (Exception e)

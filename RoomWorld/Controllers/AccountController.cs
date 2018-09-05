@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Data;
 using Microsoft.AspNetCore.Mvc;
+using Service;
 using Service.Services;
 
 namespace RoomWorld.Controllers
@@ -25,7 +26,8 @@ namespace RoomWorld.Controllers
             {
                 var password = user.Password;
                 await _registrationService.RegistrateUserAsunc(user);
-                var responce = await _tokenService.GetTokenAsunc(user.Email, password);
+                var responce =
+                    await _tokenService.GetTokenAsunc(new Authorize() {Email = user.Email, Password = password});
                 return Ok(responce);
             }
             catch (ArgumentException)
@@ -44,7 +46,7 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                var response = await _tokenService.GetTokenAsunc(authorize.Email, authorize.Password);
+                var response = await _tokenService.GetTokenAsunc(authorize);
                 return Ok(response);
             }
             catch (ArgumentException)

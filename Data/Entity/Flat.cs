@@ -3,7 +3,7 @@
 namespace Data.Entity
 {
     public class Flat : BaseEntity
-    {
+    {       
         public string Name { get; set; }
 
         public double Cost { get; set; }
@@ -16,9 +16,10 @@ namespace Data.Entity
 
         public double Size { get; set; }
 
-        public ICollection<Amenties> Amentieses { get; set; } = new List<Amenties>();
-        public ICollection<Extras> Extrases { get; set; } = new List<Extras>();
-        public Location Location { get; set; } = new Location();
-        public User User { get; set; } = new User();
+
+        public ICollection<Amenties> Amentieses { get; set; }
+        public ICollection<Extras> Extrases { get; set; }
+        public Location Location { get; set; }
+        public User User { get; set; }
     }
 }

@@ -52,6 +52,7 @@ namespace RoomWorld
             services.AddScoped<IRegistrationService, RegistrationService>();
             services.AddScoped<IHashMd5Service, HashMd5Service>();
             services.AddScoped<IFlatService, FlatService>();
+           
 
 
             services.AddCors(o => o.AddPolicy("Allow-Origin", builder =>

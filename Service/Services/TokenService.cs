@@ -26,9 +26,9 @@ namespace Service.Services
             _configuration = configuration;
         }
 
-        private ClaimsIdentity GetIdentity(User user)
+        private static ClaimsIdentity GetIdentity(User user)
         {
-            if (user == null) return null;
+            if (user is null) return null;
             var claims = new List<Claim>
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
@@ -40,18 +40,14 @@ namespace Service.Services
             return claimsIdentity;
         }
 
-        public async Task<Token> GetTokenAsunc(string email, string password)
+        public async Task<Token> GetTokenAsunc(Authorize authorize)
         {
-            if (email == null || password == null)
-            {
-                throw new ArgumentNullException(nameof(email));
-            }
-            password = _hashMd5Service.GetMd5Hash(password);
+            authorize.Password = _hashMd5Service.GetMd5Hash(authorize.Password);
 
-            var user = await (await _repository.GetAllAsync(t => t.Email == email)).FirstAsync();
+            var user = await (await _repository.GetAllAsync(t => t.Email == authorize.Email)).FirstAsync();
             
             var identity = GetIdentity(user);
-            if (identity == null || user.Password != password)
+            if (identity is null || user.Password != authorize.Password)
             {
                 throw new ArgumentException("Invalid username or password.");
             }
