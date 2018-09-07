@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Service;
 using Service.Services;
 
@@ -12,11 +15,13 @@ namespace RoomWorld.Controllers
     {
         private readonly ITokenService _tokenService;
         private readonly IRegistrationService _registrationService;
+        private readonly IUserService _userService;
 
-        public AccountController(ITokenService tokenService, IRegistrationService registrationService)
+        public AccountController(ITokenService tokenService, IRegistrationService registrationService, IUserService userService)
         {
             _tokenService = tokenService;
             _registrationService = registrationService;
+            _userService = userService;
         }
 
         [HttpPost("/registration")]
@@ -53,6 +58,22 @@ namespace RoomWorld.Controllers
             {
                 return Unauthorized();
             }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost("/get-profile")]
+        [Authorize]
+        public async Task<IActionResult> Profile()
+        {
+            try
+            {
+                var user = await _userService.GetAllAsync(t => t.Email == User.Identities.First().Name, t => t.Flats).Result.FirstAsync();
+                return Ok(user);
+            }
+    
             catch (Exception e)
             {
                 return BadRequest(e.Message);

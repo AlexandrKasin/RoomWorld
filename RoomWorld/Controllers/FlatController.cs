@@ -29,7 +29,7 @@ namespace RoomWorld.Controllers
             try
             {
                 var email = User.Identities.First().Name;
-                var user = await _userService.GetAllAsync((t => t.Email == email)).Result.FirstAsync();
+                var user = await (await _userService.GetAllAsync(t => t.Email == email)).FirstAsync();
                 flat.User = user;
                 await _flatService.AddFlatAsunc(flat);
                 return Ok();
