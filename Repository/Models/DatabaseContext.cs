@@ -12,6 +12,7 @@ namespace Repository.Models
         public DbSet<Extras> Extrase { get; set; }
         public DbSet<Location> Location { get; set; }
         public DbSet<Flat> Flat { get; set; }
+        public DbSet<HouseRules> HouseRulese { get; set; }
 
         public DatabaseContext(DbContextOptions options) : base(options)
         {

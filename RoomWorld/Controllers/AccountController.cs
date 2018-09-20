@@ -70,7 +70,7 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                var user = await _userService.GetAllAsync(t => t.Email == User.Identities.First().Name, t => t.Flats).Result.FirstAsync();
+                var user = await (await _userService.GetAllAsync(t => t.Email == User.Identities.First().Name)).FirstOrDefaultAsync();
                 return Ok(user);
             }
     

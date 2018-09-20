@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository.Models;
 
 namespace Repository.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20180919073744_AddCheckInOut")]
+    partial class AddCheckInOut
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,20 +27,24 @@ namespace Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("Amount");
+
+                    b.Property<bool>("Availability");
+
                     b.Property<long>("CreatedBy");
 
                     b.Property<DateTime>("CreatedDate");
 
                     b.Property<long?>("FlatId");
 
+                    b.Property<string>("Icon")
+                        .IsRequired();
+
                     b.Property<long?>("ModifiedBy");
 
                     b.Property<DateTime?>("ModifiedDate");
 
                     b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.Property<string>("Type")
                         .IsRequired();
 
                     b.HasKey("Id");
@@ -118,33 +124,6 @@ namespace Repository.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Flat");
-                });
-
-            modelBuilder.Entity("Data.Entity.HouseRules", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<long>("CreatedBy");
-
-                    b.Property<DateTime>("CreatedDate");
-
-                    b.Property<long?>("FlatId");
-
-                    b.Property<long?>("ModifiedBy");
-
-                    b.Property<DateTime?>("ModifiedDate");
-
-                    b.Property<string>("Name");
-
-                    b.Property<bool>("State");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FlatId");
-
-                    b.ToTable("HouseRulese");
                 });
 
             modelBuilder.Entity("Data.Entity.Location", b =>
@@ -232,13 +211,6 @@ namespace Repository.Migrations
                     b.HasOne("Data.Entity.User", "User")
                         .WithMany("Flats")
                         .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("Data.Entity.HouseRules", b =>
-                {
-                    b.HasOne("Data.Entity.Flat", "Flat")
-                        .WithMany("HouseRuleses")
-                        .HasForeignKey("FlatId");
                 });
 #pragma warning restore 612, 618
         }

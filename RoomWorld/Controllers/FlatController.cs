@@ -40,6 +40,21 @@ namespace RoomWorld.Controllers
             }
         }
 
+        [HttpGet("/flat")]
+        [Authorize]
+        public async Task<IActionResult> GetFlatById(int id)
+        {
+            try
+            {
+                var flat = await (await _flatService.GetAllAsync(x => x.Id == id, x => x.Location, x => x.Amentieses, x => x.Extrases, x => x.HouseRuleses)).FirstOrDefaultAsync();
+                return Ok(flat);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+        }
+
         [HttpPost("/get-flat")]
         [Authorize]
         public async Task<IActionResult> GetFlat(FlatConfig flatConfig)
@@ -50,7 +65,7 @@ namespace RoomWorld.Controllers
                         t.Location.Country == flatConfig.Country && t.Location.Sity == flatConfig.City && t.Accommodates >= flatConfig.Accommodates).Result
                     .ToListAsync();*/
 
-                var flats = await _flatService.GetAllAsync(null, x => x.Location, x => x.Amentieses, x => x.Extrases);
+                var flats = await _flatService.GetAllAsync(null, x => x.Location, x => x.Amentieses, x => x.Extrases, x=>x.HouseRuleses);
                 return Ok(flats);
             }
             catch (Exception e)

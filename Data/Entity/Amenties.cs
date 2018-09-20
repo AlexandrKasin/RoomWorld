@@ -12,15 +12,7 @@ namespace Data.Entity
 
         [DataMember]
         [Required]
-        public bool Availability { get; set; }
-
-        [DataMember]
-        [Required]
-        public int Amount { get; set; }
-
-        [DataMember]
-        [Required]
-        public string Icon { get; set; }
+        public string Type { get; set; }
 
         public Flat Flat { get; set; }
     }

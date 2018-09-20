@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository.Models;
 
 namespace Repository.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20180919080407_TableHouseRules")]
+    partial class TableHouseRules
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,20 +27,24 @@ namespace Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("Amount");
+
+                    b.Property<bool>("Availability");
+
                     b.Property<long>("CreatedBy");
 
                     b.Property<DateTime>("CreatedDate");
 
                     b.Property<long?>("FlatId");
 
+                    b.Property<string>("Icon")
+                        .IsRequired();
+
                     b.Property<long?>("ModifiedBy");
 
                     b.Property<DateTime?>("ModifiedDate");
 
                     b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.Property<string>("Type")
                         .IsRequired();
 
                     b.HasKey("Id");
