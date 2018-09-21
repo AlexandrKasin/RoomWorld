@@ -1,15 +1,29 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Data.Entity
 {
     public class User : BaseEntity
     {
-        public virtual string Name { get; set; }
-        public virtual string Surname { get; set; }
-        public virtual string Role { get; set; }
-        public virtual string Email { get; set; }
-        public virtual string Password { get; set; }
-        public virtual string PhoneNumber { get; set; }
+        [Required]
+        public string Name { get; set; }
+
+        [Required]
+        public string Surname { get; set; }
+
+        [Required]
+        public string Role { get; set; }
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        [Required]
+        public string Password { get; set; }
+
+        [Required]
+        public string PhoneNumber { get; set; }
+
         public ICollection<Flat> Flats { get; set; }
     }
 }

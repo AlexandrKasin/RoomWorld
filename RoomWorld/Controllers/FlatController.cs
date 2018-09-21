@@ -9,7 +9,6 @@ using Service.Services;
 
 namespace RoomWorld.Controllers
 {
-
     [ApiController]
     public class FlatController : Controller
     {
@@ -19,7 +18,7 @@ namespace RoomWorld.Controllers
         public FlatController(IFlatService flatService, IUserService userService)
         {
             _flatService = flatService;
-            _userService = userService;       
+            _userService = userService;
         }
 
         [HttpPost("/add-flat")]
@@ -46,7 +45,8 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                var flat = await (await _flatService.GetAllAsync(x => x.Id == id, x => x.Location, x => x.Amentieses, x => x.Extrases, x => x.HouseRuleses)).FirstOrDefaultAsync();
+                var flat = await (await _flatService.GetAllAsync(x => x.Id == id, x => x.Location, x => x.Amentieses,
+                    x => x.Extrases, x => x.HouseRuleses)).FirstOrDefaultAsync();
                 return Ok(flat);
             }
             catch (Exception e)
@@ -55,17 +55,17 @@ namespace RoomWorld.Controllers
             }
         }
 
-        [HttpPost("/get-flat")]
+        [HttpPost("/search")]
         [Authorize]
-        public async Task<IActionResult> GetFlat(FlatConfig flatConfig)
+        public async Task<IActionResult> SearchFlats(SearchParams searchParams)
         {
             try
             {
-                /*var flats = await _flatService.GetAllAsync(t =>
-                        t.Location.Country == flatConfig.Country && t.Location.Sity == flatConfig.City && t.Accommodates >= flatConfig.Accommodates).Result
-                    .ToListAsync();*/
-
-                var flats = await _flatService.GetAllAsync(null, x => x.Location, x => x.Amentieses, x => x.Extrases, x=>x.HouseRuleses);
+                var flats = (await _flatService.GetAllAsync(
+                        x => x.Location.Country == searchParams.Country && x.Location.City == searchParams.City,
+                        x => x.Location, x => x.Amentieses, x => x.Extrases, x => x.HouseRuleses))
+                    .Skip(searchParams.Skip)
+                    .Take(searchParams.Take);
                 return Ok(flats);
             }
             catch (Exception e)
@@ -79,7 +79,7 @@ namespace RoomWorld.Controllers
         public async Task<IActionResult> RemoveFlat(Flat flat)
         {
             try
-            {               
+            {
                 await _flatService.DeleteFlatAsunc(flat);
                 return Ok();
             }

@@ -1,24 +1,27 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.Serialization;
+using System.ComponentModel.DataAnnotations;
 
 namespace Data.Entity
 {
-    [DataContract]
     public class Location : BaseEntity
     {
-        public override long Id { get; protected set; }
+        [Required]
+        public string Country { get; set; }
 
-        [DataMember] public string Country { get; set; }
+        [Required]
+        public string City { get; set; }
 
-        [DataMember] public string City { get; set; }
+        [Required]
+        public int NumberHouse { get; set; }
 
-        [DataMember] public int NumberHouse { get; set; }
+        [Required]
+        public int NumberHouseBlock { get; set; }
 
-        [DataMember] public int NumberHouseBlock { get; set; }
+        [Required]
+        public int NumberFlat { get; set; }
 
-        [DataMember] public int NumberFlat { get; set; }
-
-        [DataMember] public string GpsPoint { get; set; }
+        [Required]
+        public string GpsPoint { get; set; }
 
         public ICollection<Flat> Flat { get; set; }
     }

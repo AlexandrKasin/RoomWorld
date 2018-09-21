@@ -1,14 +1,13 @@
-﻿using System.Runtime.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Data.Entity
 {
-    [DataContract]
     public class HouseRules : BaseEntity
     {
-        [DataMember]
+        [Required]
         public string Name { get; set; }
 
-        [DataMember]
+        [Required]
         public bool State { get; set; }
 
         public Flat Flat { get; set; }
