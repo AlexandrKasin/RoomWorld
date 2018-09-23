@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Data;
 using Data.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Service;
+using Service.dto;
 using Service.Services;
 
 namespace RoomWorld.Controllers
@@ -17,12 +19,14 @@ namespace RoomWorld.Controllers
         private readonly ITokenService _tokenService;
         private readonly IRegistrationService _registrationService;
         private readonly IUserService _userService;
+        private readonly IMapper _mapper;
 
-        public AccountController(ITokenService tokenService, IRegistrationService registrationService, IUserService userService)
+        public AccountController(ITokenService tokenService, IRegistrationService registrationService, IUserService userService, IMapper mapper)
         {
             _tokenService = tokenService;
             _registrationService = registrationService;
             _userService = userService;
+            _mapper = mapper;
         }
 
         [HttpPost("/registration")]
@@ -71,7 +75,7 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                var user = await (await _userService.GetAllAsync(t => t.Email == User.Identities.First().Name)).FirstOrDefaultAsync();
+                var user = _mapper.Map<UserViewModel> (await (await _userService.GetAllAsync(t => t.Email == User.Identities.FirstOrDefault().Name, x => x.Flats)).FirstOrDefaultAsync());
                 return Ok(user);
             }
     

@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Data.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Service.dto;
 using Service.Services;
 
 namespace RoomWorld.Controllers
@@ -14,11 +17,13 @@ namespace RoomWorld.Controllers
     {
         private readonly IFlatService _flatService;
         private readonly IUserService _userService;
+        private readonly IMapper _mapper;
 
-        public FlatController(IFlatService flatService, IUserService userService)
+        public FlatController(IFlatService flatService, IUserService userService, IMapper mapper)
         {
             _flatService = flatService;
             _userService = userService;
+            _mapper = mapper;
         }
 
         [HttpPost("/add-flat")]
@@ -28,7 +33,7 @@ namespace RoomWorld.Controllers
             try
             {
                 var email = User.Identities.First().Name;
-                var user = await (await _userService.GetAllAsync(t => t.Email == email)).FirstAsync();
+                var user = await (await _userService.GetAllAsync(t => t.Email == email)).FirstOrDefaultAsync();
                 flat.User = user;
                 await _flatService.AddFlatAsunc(flat);
                 return Ok();
@@ -46,8 +51,25 @@ namespace RoomWorld.Controllers
             try
             {
                 var flat = await (await _flatService.GetAllAsync(x => x.Id == id, x => x.Location, x => x.Amentieses,
-                    x => x.Extrases, x => x.HouseRuleses)).FirstOrDefaultAsync();
-                return Ok(flat);
+                    x => x.Extrases, x => x.HouseRuleses, x => x.Images)).FirstOrDefaultAsync();
+                return Ok(_mapper.Map<FlatViewModel>(flat));
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+        }
+
+        [HttpPost("/amount-places")]
+        [Authorize]
+        public async Task<IActionResult> AmountFlatByLoation(LocationParams locationParams)
+        {
+            try
+            {
+                var amount = (await _flatService.GetAllAsync(x => x.Location.Country.ToLower() == locationParams.Country.ToLower()
+                && x.Location.City.ToLower() == locationParams.City.ToLower(), x => x.Location, x => x.Amentieses,
+                    x => x.Extrases, x => x.HouseRuleses)).Count();
+                return Ok(amount);
             }
             catch (Exception e)
             {
@@ -62,11 +84,12 @@ namespace RoomWorld.Controllers
             try
             {
                 var flats = (await _flatService.GetAllAsync(
-                        x => x.Location.Country == searchParams.Country && x.Location.City == searchParams.City,
-                        x => x.Location, x => x.Amentieses, x => x.Extrases, x => x.HouseRuleses))
-                    .Skip(searchParams.Skip)
+                       x => x.Location.Country.ToLower() == searchParams.Country.ToLower()
+                && x.Location.City.ToLower() == searchParams.City.ToLower(),
+                        x => x.Location, x => x.Amentieses, x => x.Extrases, x => x.HouseRuleses, x => x.Images)).Skip(searchParams.Skip)
                     .Take(searchParams.Take);
-                return Ok(flats);
+                var flatsModel = _mapper.Map<ICollection<FlatViewModel>>(flats);
+                return Ok(flatsModel);
             }
             catch (Exception e)
             {

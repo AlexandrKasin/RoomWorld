@@ -27,7 +27,7 @@ namespace Service.Services
             return await _repository.GetByIdAsync(id);
         }
 
-        public async Task<IQueryable<User>> GetAllAsync(Expression<Func<User, bool>> predicate, params Expression<Func<User, object>>[] includeParams)
+        public async Task<IQueryable<User>> GetAllAsync(Expression<Func<User, bool>> predicate = null, params Expression<Func<User, object>>[] includeParams)
         {
             return await _repository.GetAllAsync(predicate, includeParams);
         }

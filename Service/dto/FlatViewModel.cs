@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 
-namespace Data.Entity
+namespace Service.dto
 {
-    
-    public class Flat : BaseEntity
+    public class FlatViewModel
     {
-        
+        [Required]
+        public long Id { get; set; }
+
         [Required]
         public string Name { get; set; }
 
@@ -32,13 +34,14 @@ namespace Data.Entity
         [Required]
         public DateTime CheckOut { get; set; }
 
+        public DateTime CreatedDate { get; set; }
 
+        public ICollection<AmenitiesViewModel> Amentieses { get; set; }
 
-        public ICollection<Amenties> Amentieses { get; set; }
-        public ICollection<Extras> Extrases { get; set; }
-        public ICollection<HouseRules> HouseRuleses { get; set; }
-        public ICollection<Image> Images { get; set; }
-        public Location Location { get; set; }
-        public User User { get; set; }
+        public ICollection<HouseRulesViewModel> HouseRuleses { get; set; }
+
+        public ICollection<ImageViewModel> Images { get; set; }
+
+        public LocationViewModel Location { get; set; }
     }
 }

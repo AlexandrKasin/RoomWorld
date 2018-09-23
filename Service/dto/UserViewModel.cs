@@ -1,8 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Service.dto
 {
-    public class UserModel
+    public class UserViewModel
     {
         [Required]
         public  string Name { get; set; }
@@ -22,5 +24,7 @@ namespace Service.dto
 
         [Required]
         public  string PhoneNumber { get; set; }
+
+        public ICollection<FlatViewModel> Flats { get; set; }
     }
 }

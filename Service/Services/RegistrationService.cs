@@ -21,8 +21,8 @@ namespace Service.Services
         public async Task RegistrateUserAsunc(User user)
         {
             user.Role = Role.User.ToString();
-            var systemUser = await _repositoryService.GetAllAsync(t=>t.Email == "system@admin.com").Result.FirstAsync();
-            user.CreatedBy = systemUser.Id;
+            var systemUser = await _repositoryService.GetAllAsync(t=>t.Email == "system@admin.com").Result.FirstOrDefaultAsync();
+            user.CreatedBy = 1;/*systemUser.Id*/
             
             var exists = (await _repositoryService.GetAllAsync(t => t.Email == user.Email)).Any();
             if (exists)

@@ -10,8 +10,8 @@ using Repository.Models;
 namespace Repository.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20180830112157_CreateFlat")]
-    partial class CreateFlat
+    [Migration("20180923082404_InitialMigr")]
+    partial class InitialMigr
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -27,23 +27,21 @@ namespace Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("Amount");
-
-                    b.Property<bool>("Availability");
-
                     b.Property<long>("CreatedBy");
 
                     b.Property<DateTime>("CreatedDate");
 
                     b.Property<long?>("FlatId");
 
-                    b.Property<string>("Icon");
-
                     b.Property<long?>("ModifiedBy");
 
                     b.Property<DateTime?>("ModifiedDate");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<string>("Type")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -58,7 +56,8 @@ namespace Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Cost");
+                    b.Property<string>("Cost")
+                        .IsRequired();
 
                     b.Property<long>("CreatedBy");
 
@@ -70,7 +69,8 @@ namespace Repository.Migrations
 
                     b.Property<DateTime?>("ModifiedDate");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -85,13 +85,20 @@ namespace Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("Accommodates");
+
+                    b.Property<DateTime>("CheckIn");
+
+                    b.Property<DateTime>("CheckOut");
+
                     b.Property<double>("Cost");
 
                     b.Property<long>("CreatedBy");
 
                     b.Property<DateTime>("CreatedDate");
 
-                    b.Property<string>("Description");
+                    b.Property<string>("Description")
+                        .IsRequired();
 
                     b.Property<long?>("LocationId");
 
@@ -99,13 +106,77 @@ namespace Repository.Migrations
 
                     b.Property<DateTime?>("ModifiedDate");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<double>("Size");
+
+                    b.Property<string>("SpaceOffered")
+                        .IsRequired();
+
+                    b.Property<long?>("UserId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("LocationId");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Flat");
+                });
+
+            modelBuilder.Entity("Data.Entity.HouseRules", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<long>("CreatedBy");
+
+                    b.Property<DateTime>("CreatedDate");
+
+                    b.Property<long?>("FlatId");
+
+                    b.Property<long?>("ModifiedBy");
+
+                    b.Property<DateTime?>("ModifiedDate");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<bool>("State");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FlatId");
+
+                    b.ToTable("HouseRulese");
+                });
+
+            modelBuilder.Entity("Data.Entity.Image", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<long>("CreatedBy");
+
+                    b.Property<DateTime>("CreatedDate");
+
+                    b.Property<long?>("FlatId");
+
+                    b.Property<long?>("ModifiedBy");
+
+                    b.Property<DateTime?>("ModifiedDate");
+
+                    b.Property<string>("Url")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FlatId");
+
+                    b.ToTable("Image");
                 });
 
             modelBuilder.Entity("Data.Entity.Location", b =>
@@ -114,25 +185,28 @@ namespace Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Country");
+                    b.Property<string>("City")
+                        .IsRequired();
+
+                    b.Property<string>("Country")
+                        .IsRequired();
 
                     b.Property<long>("CreatedBy");
 
                     b.Property<DateTime>("CreatedDate");
 
-                    b.Property<string>("GpsPoint");
+                    b.Property<string>("GpsPoint")
+                        .IsRequired();
 
                     b.Property<long?>("ModifiedBy");
 
                     b.Property<DateTime?>("ModifiedDate");
 
+                    b.Property<int>("NumberFlat");
+
                     b.Property<int>("NumberHouse");
 
                     b.Property<int>("NumberHouseBlock");
-
-                    b.Property<int>("Numberflat");
-
-                    b.Property<string>("Sity");
 
                     b.HasKey("Id");
 
@@ -195,6 +269,24 @@ namespace Repository.Migrations
                     b.HasOne("Data.Entity.Location", "Location")
                         .WithMany("Flat")
                         .HasForeignKey("LocationId");
+
+                    b.HasOne("Data.Entity.User", "User")
+                        .WithMany("Flats")
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("Data.Entity.HouseRules", b =>
+                {
+                    b.HasOne("Data.Entity.Flat", "Flat")
+                        .WithMany("HouseRuleses")
+                        .HasForeignKey("FlatId");
+                });
+
+            modelBuilder.Entity("Data.Entity.Image", b =>
+                {
+                    b.HasOne("Data.Entity.Flat", "Flat")
+                        .WithMany("Images")
+                        .HasForeignKey("FlatId");
                 });
 #pragma warning restore 612, 618
         }
