@@ -14,6 +14,7 @@ namespace Repository.Models
         public DbSet<Flat> Flat { get; set; }
         public DbSet<HouseRules> HouseRulese { get; set; }
         public DbSet<Image> Image { get; set; }
+        public DbSet<Order> Order { get; set; }
 
 
         public DatabaseContext(DbContextOptions options) : base(options)

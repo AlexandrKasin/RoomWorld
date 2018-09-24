@@ -38,6 +38,7 @@ namespace Data.Entity
         public ICollection<Extras> Extrases { get; set; }
         public ICollection<HouseRules> HouseRuleses { get; set; }
         public ICollection<Image> Images { get; set; }
+        public ICollection<Order> Orders { get; set; }
         public Location Location { get; set; }
         public User User { get; set; }
     }

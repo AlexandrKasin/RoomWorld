@@ -8,7 +8,7 @@ namespace Repository.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
+            /*migrationBuilder.CreateTable(
                 name: "Location",
                 columns: table => new
                 {
@@ -29,7 +29,7 @@ namespace Repository.Migrations
                 {
                     table.PrimaryKey("PK_Location", x => x.Id);
                 });
-
+                
             migrationBuilder.CreateTable(
                 name: "User",
                 columns: table => new
@@ -218,6 +218,7 @@ namespace Repository.Migrations
                 name: "IX_Image_FlatId",
                 table: "Image",
                 column: "FlatId");
+                */
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -15,6 +15,7 @@ namespace Service
             CreateMap<HouseRules, HouseRulesViewModel>();
             CreateMap<Amenties, AmenitiesViewModel>();
             CreateMap<Image, ImageViewModel>();
+            CreateMap<Order, OrderViewModel>();
             //CreateMap<ICollection<Flat>, ICollection<FlatViewModel>>();
         }
     }

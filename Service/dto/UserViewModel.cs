@@ -26,5 +26,7 @@ namespace Service.dto
         public  string PhoneNumber { get; set; }
 
         public ICollection<FlatViewModel> Flats { get; set; }
+
+        public ICollection<UserViewModel> Users { get; set; }
     }
 }

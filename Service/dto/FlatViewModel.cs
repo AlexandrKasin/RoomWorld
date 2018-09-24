@@ -42,6 +42,8 @@ namespace Service.dto
 
         public ICollection<ImageViewModel> Images { get; set; }
 
+        public ICollection<OrderViewModel> Orders { get; set; }
+
         public LocationViewModel Location { get; set; }
     }
 }

@@ -7,6 +7,7 @@ using Data.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Service;
 using Service.dto;
 using Service.Services;
 
@@ -18,12 +19,14 @@ namespace RoomWorld.Controllers
         private readonly IFlatService _flatService;
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
+        private readonly IOrderService _orderService;
 
-        public FlatController(IFlatService flatService, IUserService userService, IMapper mapper)
+        public FlatController(IFlatService flatService, IUserService userService, IMapper mapper, IOrderService orderService)
         {
             _flatService = flatService;
             _userService = userService;
             _mapper = mapper;
+            _orderService = orderService;
         }
 
         [HttpPost("/add-flat")]
@@ -44,6 +47,21 @@ namespace RoomWorld.Controllers
             }
         }
 
+        [HttpPost("/order")]
+        [Authorize]
+        public async Task<IActionResult> OrderFlat(OrderParams orderParams)
+        {
+            try
+            {
+                await _orderService.AddOrderAsunc(orderParams, User.Identities.FirstOrDefault()?.Name);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+        }
+
         [HttpGet("/flat")]
         [Authorize]
         public async Task<IActionResult> GetFlatById(int id)
@@ -51,7 +69,7 @@ namespace RoomWorld.Controllers
             try
             {
                 var flat = await (await _flatService.GetAllAsync(x => x.Id == id, x => x.Location, x => x.Amentieses,
-                    x => x.Extrases, x => x.HouseRuleses, x => x.Images)).FirstOrDefaultAsync();
+                    x => x.Extrases, x => x.HouseRuleses, x => x.Images, x => x.Orders)).FirstOrDefaultAsync();
                 return Ok(_mapper.Map<FlatViewModel>(flat));
             }
             catch (Exception e)

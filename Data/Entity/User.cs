@@ -25,5 +25,7 @@ namespace Data.Entity
         public string PhoneNumber { get; set; }
 
         public ICollection<Flat> Flats { get; set; }
+
+        public ICollection<Order> Orders { get; set; }
     }
 }
