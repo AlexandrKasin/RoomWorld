@@ -21,7 +21,8 @@ namespace RoomWorld.Controllers
         private readonly IMapper _mapper;
         private readonly IOrderService _orderService;
 
-        public FlatController(IFlatService flatService, IUserService userService, IMapper mapper, IOrderService orderService)
+        public FlatController(IFlatService flatService, IUserService userService, IMapper mapper,
+            IOrderService orderService)
         {
             _flatService = flatService;
             _userService = userService;
@@ -37,7 +38,7 @@ namespace RoomWorld.Controllers
             {
                 var email = User.Identities.First().Name;
                 var user = await (await _userService.GetAllAsync(t => t.Email == email)).FirstOrDefaultAsync();
-                flat.User = user;
+                flat.User = user; 
                 await _flatService.AddFlatAsunc(flat);
                 return Ok();
             }
@@ -80,13 +81,17 @@ namespace RoomWorld.Controllers
 
         [HttpPost("/amount-places")]
         [Authorize]
-        public async Task<IActionResult> AmountFlatByLoation(LocationParams locationParams)
+        public async Task<IActionResult> AmountFlatByLoation(SearchParams searchParams)
         {
             try
             {
-                var amount = (await _flatService.GetAllAsync(x => x.Location.Country.ToLower() == locationParams.Country.ToLower()
-                && x.Location.City.ToLower() == locationParams.City.ToLower(), x => x.Location, x => x.Amentieses,
-                    x => x.Extrases, x => x.HouseRuleses)).Count();
+                var amount = (await _flatService.GetAllAsync(
+                    x => x.Location.Country.ToLower() == searchParams.Country.ToLower()
+                         && x.Location.City.ToLower() == searchParams.City.ToLower()
+                         && x.Orders.All(o => !(o.DateFrom.Date <= searchParams.DateFrom.Date && o.DateTo.Date >= searchParams.DateFrom.Date)
+                                              && !(o.DateFrom.Date <= searchParams.DateTo.Date && o.DateTo.Date >= searchParams.DateTo.Date)
+                                              && !(o.DateFrom.Date > searchParams.DateFrom.Date && o.DateFrom.Date < searchParams.DateTo.Date))
+                    , x => x.Location)).Count();
                 return Ok(amount);
             }
             catch (Exception e)
@@ -102,9 +107,13 @@ namespace RoomWorld.Controllers
             try
             {
                 var flats = (await _flatService.GetAllAsync(
-                       x => x.Location.Country.ToLower() == searchParams.Country.ToLower()
-                && x.Location.City.ToLower() == searchParams.City.ToLower(),
-                        x => x.Location, x => x.Amentieses, x => x.Extrases, x => x.HouseRuleses, x => x.Images)).Skip(searchParams.Skip)
+                        x => x.Location.Country.ToLower() == searchParams.Country.ToLower()
+                             && x.Location.City.ToLower() == searchParams.City.ToLower() 
+                             && x.Orders.All(o => !(o.DateFrom.Date <= searchParams.DateFrom.Date && o.DateTo.Date >= searchParams.DateFrom.Date) 
+                                                  && !(o.DateFrom.Date <= searchParams.DateTo.Date && o.DateTo.Date >= searchParams.DateTo.Date)
+                                                  && !(o.DateFrom.Date > searchParams.DateFrom.Date && o.DateFrom.Date < searchParams.DateTo.Date))
+                                                  ,x => x.Location, x => x.Amentieses, x => x.Extrases, x => x.HouseRuleses, x => x.Images))
+                    .Skip(searchParams.Skip)
                     .Take(searchParams.Take);
                 var flatsModel = _mapper.Map<ICollection<FlatViewModel>>(flats);
                 return Ok(flatsModel);

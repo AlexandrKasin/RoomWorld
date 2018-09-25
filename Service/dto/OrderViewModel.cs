@@ -12,6 +12,5 @@ namespace Service.dto
         public DateTime DateTo { get; set; }
 
         public double Price { get; set; }
-
     }
 }

@@ -20,13 +20,16 @@ namespace RoomWorld.Controllers
         private readonly IRegistrationService _registrationService;
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
+        private readonly IProfileService _profileService;
 
-        public AccountController(ITokenService tokenService, IRegistrationService registrationService, IUserService userService, IMapper mapper)
+        public AccountController(ITokenService tokenService, IRegistrationService registrationService,
+            IUserService userService, IMapper mapper, IProfileService profileService)
         {
             _tokenService = tokenService;
             _registrationService = registrationService;
             _userService = userService;
             _mapper = mapper;
+            _profileService = profileService;
         }
 
         [HttpPost("/registration")]
@@ -75,10 +78,13 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                var user = _mapper.Map<UserViewModel> (await (await _userService.GetAllAsync(t => t.Email == User.Identities.FirstOrDefault().Name, x => x.Flats)).FirstOrDefaultAsync());
+                /*var user = _mapper.Map<UserViewModel>(
+                    await (await _userService.GetAllAsync(t => t.Email == User.Identities.FirstOrDefault().Name,
+                        x => x.Flats, x => x.Orders)).FirstOrDefaultAsync());*/
+                var user = _mapper.Map<UserViewModel>(await _profileService.GetProflieByEmail(User.Identities.FirstOrDefault()?.Name));
                 return Ok(user);
             }
-    
+
             catch (Exception e)
             {
                 return BadRequest(e.Message);

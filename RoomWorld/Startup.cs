@@ -55,6 +55,7 @@ namespace RoomWorld
             services.AddScoped<IHashMd5Service, HashMd5Service>();
             services.AddScoped<IFlatService, FlatService>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IProfileService, ProfileService>();
            
 
 

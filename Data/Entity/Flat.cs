@@ -27,6 +27,12 @@ namespace Data.Entity
         public double Size { get; set; }
 
         [Required]
+        public int CountBathroom { get; set; }
+
+        [Required]
+        public int CountBedroom { get; set; }
+
+        [Required]
         public DateTime CheckIn { get; set; }
 
         [Required]

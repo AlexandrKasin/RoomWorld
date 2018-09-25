@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Data.Entity;
@@ -32,6 +33,11 @@ namespace Service.Services
                 User = (await _userService.GetAllAsync(x=> x.Email == email)).FirstOrDefault()
             };
             await _repository.InsertAsync(order);
+        }
+
+        public async Task<IQueryable<Order>> GetAllAsync(Expression<Func<Order, bool>> predicate = null, params Expression<Func<Order, object>>[] includeParams)
+        {
+            return await _repository.GetAllAsync(predicate, includeParams);
         }
     }
 }
