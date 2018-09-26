@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\" />
+    <None Include="wwwroot\images\uploaded\Al%40gmail.com\SAMSUNG_SSD_650_v1.0.0.png" />
   </ItemGroup>
 
   <ItemGroup>

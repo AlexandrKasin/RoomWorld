@@ -56,6 +56,7 @@ namespace RoomWorld
             services.AddScoped<IFlatService, FlatService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IProfileService, ProfileService>();
+            services.AddScoped<IUploadImagesService, UploadImagesService>();
            
 
 

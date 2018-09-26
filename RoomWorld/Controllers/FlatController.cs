@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data.Entity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Service;
@@ -20,26 +22,25 @@ namespace RoomWorld.Controllers
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
         private readonly IOrderService _orderService;
+        private readonly IUploadImagesService _uploadImagesService;
 
         public FlatController(IFlatService flatService, IUserService userService, IMapper mapper,
-            IOrderService orderService)
+            IOrderService orderService, IUploadImagesService uploadImagesService)
         {
             _flatService = flatService;
             _userService = userService;
             _mapper = mapper;
             _orderService = orderService;
+            _uploadImagesService = uploadImagesService;
         }
 
-        [HttpPost("/add-flat")]
+        [HttpPost("/upload/images")]
         [Authorize]
-        public async Task<IActionResult> RentFlat(Flat flat)
+        public async Task<IActionResult> RentFlat(IFormCollection formFile)
         {
             try
             {
-                var email = User.Identities.First().Name;
-                var user = await (await _userService.GetAllAsync(t => t.Email == email)).FirstOrDefaultAsync();
-                flat.User = user; 
-                await _flatService.AddFlatAsunc(flat);
+                await _uploadImagesService.UploadAsync(formFile, User.Identities.FirstOrDefault()?.Name);
                 return Ok();
             }
             catch (Exception e)
