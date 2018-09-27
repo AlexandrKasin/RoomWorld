@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RoomWorld
+namespace Service
 {
     public class SearchParams
     {

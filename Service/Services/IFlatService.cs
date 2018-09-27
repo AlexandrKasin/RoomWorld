@@ -4,15 +4,17 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Data.Entity;
+using Service.dto;
 
 namespace Service.Services
 {
     public interface IFlatService
     {
-        Task AddFlatAsunc(Flat flat);
-        Task<Flat> GetFlatByIdAsunc(int id);
+        Task AddFlatAsunc(Flat flat, string email);
+        Task<FlatViewModel> GetFlatByIdAsunc(int id);
         Task<IQueryable<Flat>> GetAllAsync(Expression<Func<Flat, bool>> predicate = null, params Expression<Func<Flat, object>>[] includeParams);
         Task UpdateFlatAsunc(Flat flat);
         Task DeleteFlatAsunc(Flat flat);
+        Task<ICollection<FlatViewModel>> SearchFlatAsunc(SearchParams searchParams);
     }
 }

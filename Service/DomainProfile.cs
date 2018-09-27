@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Data.Entity;
 using Service.dto;
-using System.Collections.Generic;
 
 namespace Service
 {
@@ -16,7 +15,6 @@ namespace Service
             CreateMap<Amenties, AmenitiesViewModel>();
             CreateMap<Image, ImageViewModel>();
             CreateMap<Order, OrderViewModel>();
-            //CreateMap<ICollection<Flat>, ICollection<FlatViewModel>>();
         }
     }
 }

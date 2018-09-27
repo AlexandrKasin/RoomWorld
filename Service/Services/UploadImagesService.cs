@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 using System.Threading.Tasks;
-using Data.Entity;
 using Microsoft.AspNetCore.Http;
 
 namespace Service.Services
@@ -12,7 +8,7 @@ namespace Service.Services
     {
         public async Task UploadAsync(IFormCollection formFile, string email)
         {
-            var path = @".\images\uploaded\" + email;
+            var path = @".\wwwroot\images\uploaded\" + email;
             var dirInfo = new DirectoryInfo(path);
             if (!dirInfo.Exists)
             {

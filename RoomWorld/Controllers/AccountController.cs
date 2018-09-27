@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
-using Data;
 using Data.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Service;
-using Service.dto;
 using Service.Services;
 
 namespace RoomWorld.Controllers
@@ -18,17 +14,13 @@ namespace RoomWorld.Controllers
     {
         private readonly ITokenService _tokenService;
         private readonly IRegistrationService _registrationService;
-        private readonly IUserService _userService;
-        private readonly IMapper _mapper;
         private readonly IProfileService _profileService;
 
         public AccountController(ITokenService tokenService, IRegistrationService registrationService,
-            IUserService userService, IMapper mapper, IProfileService profileService)
+            IProfileService profileService)
         {
             _tokenService = tokenService;
             _registrationService = registrationService;
-            _userService = userService;
-            _mapper = mapper;
             _profileService = profileService;
         }
 
@@ -37,10 +29,9 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                var password = user.Password;
                 await _registrationService.RegistrateUserAsunc(user);
                 var responce =
-                    await _tokenService.GetTokenAsunc(new Authorize() {Email = user.Email, Password = password});
+                    await _tokenService.GetTokenAsunc(new Authorize() {Email = user.Email, Password = user.Password});
                 return Ok(responce);
             }
             catch (ArgumentException)
@@ -78,10 +69,7 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                /*var user = _mapper.Map<UserViewModel>(
-                    await (await _userService.GetAllAsync(t => t.Email == User.Identities.FirstOrDefault().Name,
-                        x => x.Flats, x => x.Orders)).FirstOrDefaultAsync());*/
-                var user = _mapper.Map<UserViewModel>(await _profileService.GetProflieByEmail(User.Identities.FirstOrDefault()?.Name));
+                var user = await _profileService.GetProflieByEmail(User.Identities.FirstOrDefault()?.Name);
                 return Ok(user);
             }
 

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data.Entity;
@@ -12,24 +11,24 @@ namespace Service.Services
     {
         private readonly IUserService _userService;
         private readonly IFlatService _flatService;
-        private readonly IOrderService _orderService;
+        private readonly IMapper _mapper;
 
-        public ProfileService(IUserService userService, IFlatService flatService, IOrderService orderService)
+        public ProfileService(IUserService userService, IFlatService flatService,
+            IMapper mapper)
         {
             _userService = userService;
             _flatService = flatService;
-            _orderService = orderService;
+            _mapper = mapper;
         }
 
-        public async Task<User> GetProflieByEmail(string email)
+        public async Task<UserViewModel> GetProflieByEmail(string email)
         {
             var user = await (await _userService.GetAllAsync(t => t.Email == email))
                 .FirstOrDefaultAsync();
             user.Flats =
                 new List<Flat>(
                     await _flatService.GetAllAsync(x => x.User.Id == user.Id, x => x.Location, x => x.Images));
-            user.Orders = new List<Order>(await _orderService.GetAllAsync(x => x.User.Id == user.Id, x => x.Flat, x => x.User));
-            return user;
+            return _mapper.Map<UserViewModel>(user);
         }
     }
 }

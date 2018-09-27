@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Data.Entity;
+﻿using System.Threading.Tasks;
+using Service.dto;
 
 namespace Service.Services
 {
     public interface IProfileService
     {
-        Task<User> GetProflieByEmail(string email);
+        Task<UserViewModel> GetProflieByEmail(string email);
     }
 }

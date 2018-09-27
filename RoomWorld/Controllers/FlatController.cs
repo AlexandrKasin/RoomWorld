@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using Data.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Service;
-using Service.dto;
 using Service.Services;
 
 namespace RoomWorld.Controllers
@@ -19,17 +14,13 @@ namespace RoomWorld.Controllers
     public class FlatController : Controller
     {
         private readonly IFlatService _flatService;
-        private readonly IUserService _userService;
-        private readonly IMapper _mapper;
         private readonly IOrderService _orderService;
         private readonly IUploadImagesService _uploadImagesService;
 
-        public FlatController(IFlatService flatService, IUserService userService, IMapper mapper,
+        public FlatController(IFlatService flatService,
             IOrderService orderService, IUploadImagesService uploadImagesService)
         {
             _flatService = flatService;
-            _userService = userService;
-            _mapper = mapper;
             _orderService = orderService;
             _uploadImagesService = uploadImagesService;
         }
@@ -41,6 +32,21 @@ namespace RoomWorld.Controllers
             try
             {
                 await _uploadImagesService.UploadAsync(formFile, User.Identities.FirstOrDefault()?.Name);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+        }
+
+        [HttpPost("/place/new")]
+        [Authorize]
+        public async Task<IActionResult> AddFlat(Flat flat)
+        {
+            try
+            {
+                await _flatService.AddFlatAsunc(flat, User.Identities.FirstOrDefault()?.Name);
                 return Ok();
             }
             catch (Exception e)
@@ -70,9 +76,7 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                var flat = await (await _flatService.GetAllAsync(x => x.Id == id, x => x.Location, x => x.Amentieses,
-                    x => x.Extrases, x => x.HouseRuleses, x => x.Images, x => x.Orders)).FirstOrDefaultAsync();
-                return Ok(_mapper.Map<FlatViewModel>(flat));
+                return Ok(await _flatService.GetFlatByIdAsunc(id));
             }
             catch (Exception e)
             {
@@ -86,14 +90,17 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                var amount = (await _flatService.GetAllAsync(
+                var amountFlats = (await _flatService.GetAllAsync(
                     x => x.Location.Country.ToLower() == searchParams.Country.ToLower()
                          && x.Location.City.ToLower() == searchParams.City.ToLower()
-                         && x.Orders.All(o => !(o.DateFrom.Date <= searchParams.DateFrom.Date && o.DateTo.Date >= searchParams.DateFrom.Date)
-                                              && !(o.DateFrom.Date <= searchParams.DateTo.Date && o.DateTo.Date >= searchParams.DateTo.Date)
-                                              && !(o.DateFrom.Date > searchParams.DateFrom.Date && o.DateFrom.Date < searchParams.DateTo.Date))
-                    , x => x.Location)).Count();
-                return Ok(amount);
+                         && x.Orders.All(o =>
+                             !(o.DateFrom.Date <= searchParams.DateFrom.Date &&
+                               o.DateTo.Date >= searchParams.DateFrom.Date) &&
+                             !(o.DateFrom.Date <= searchParams.DateTo.Date &&
+                               o.DateTo.Date >= searchParams.DateTo.Date) &&
+                             !(o.DateFrom.Date > searchParams.DateFrom.Date &&
+                               o.DateFrom.Date < searchParams.DateTo.Date)), x => x.Location)).Count();
+                return Ok(amountFlats);
             }
             catch (Exception e)
             {
@@ -107,32 +114,8 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                var flats = (await _flatService.GetAllAsync(
-                        x => x.Location.Country.ToLower() == searchParams.Country.ToLower()
-                             && x.Location.City.ToLower() == searchParams.City.ToLower() 
-                             && x.Orders.All(o => !(o.DateFrom.Date <= searchParams.DateFrom.Date && o.DateTo.Date >= searchParams.DateFrom.Date) 
-                                                  && !(o.DateFrom.Date <= searchParams.DateTo.Date && o.DateTo.Date >= searchParams.DateTo.Date)
-                                                  && !(o.DateFrom.Date > searchParams.DateFrom.Date && o.DateFrom.Date < searchParams.DateTo.Date))
-                                                  ,x => x.Location, x => x.Amentieses, x => x.Extrases, x => x.HouseRuleses, x => x.Images))
-                    .Skip(searchParams.Skip)
-                    .Take(searchParams.Take);
-                var flatsModel = _mapper.Map<ICollection<FlatViewModel>>(flats);
-                return Ok(flatsModel);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e);
-            }
-        }
-
-        [HttpPost("/remove-flat")]
-        [Authorize]
-        public async Task<IActionResult> RemoveFlat(Flat flat)
-        {
-            try
-            {
-                await _flatService.DeleteFlatAsunc(flat);
-                return Ok();
+                var flats = await _flatService.SearchFlatAsunc(searchParams);
+                return Ok(flats);
             }
             catch (Exception e)
             {
