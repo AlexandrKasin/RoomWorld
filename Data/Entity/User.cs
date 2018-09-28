@@ -6,9 +6,11 @@ namespace Data.Entity
     public class User : BaseEntity
     {
         [Required]
+        [MaxLength(100)]
         public string Name { get; set; }
 
         [Required]
+        [MaxLength(100)]
         public string Surname { get; set; }
 
         [Required]
@@ -16,12 +18,15 @@ namespace Data.Entity
 
         [Required]
         [EmailAddress]
+        [MaxLength(100)]
         public string Email { get; set; }
 
         [Required]
+        [MinLength(6)]
         public string Password { get; set; }
 
         [Required]
+        [MaxLength(20)]
         public string PhoneNumber { get; set; }
 
         public ICollection<Flat> Flats { get; set; }

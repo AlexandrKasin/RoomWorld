@@ -84,7 +84,7 @@ namespace RoomWorld.Controllers
             }
         }
 
-        [HttpPost("/amount-places")]
+        [HttpPost("/places/amount")]
         [Authorize]
         public async Task<IActionResult> AmountFlatByLoation(SearchParams searchParams)
         {

@@ -21,7 +21,7 @@ namespace Service.Services
             _mapper = mapper;
         }
 
-        public async Task<UserViewModel> GetProflieByEmail(string email)
+        public async Task<UserViewModel> GetProflieByEmailAsync(string email)
         {
             var user = await (await _userService.GetAllAsync(t => t.Email == email))
                 .FirstOrDefaultAsync();

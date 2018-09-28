@@ -5,6 +5,6 @@ namespace Service.Services
 {
     public interface IProfileService
     {
-        Task<UserViewModel> GetProflieByEmail(string email);
+        Task<UserViewModel> GetProflieByEmailAsync(string email);
     }
 }

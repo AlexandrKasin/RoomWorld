@@ -63,13 +63,13 @@ namespace RoomWorld.Controllers
             }
         }
 
-        [HttpPost("/get-profile")]
+        [HttpPost("/user/profile")]
         [Authorize]
         public async Task<IActionResult> Profile()
         {
             try
             {
-                var user = await _profileService.GetProflieByEmail(User.Identities.FirstOrDefault()?.Name);
+                var user = await _profileService.GetProflieByEmailAsync(User.Identities.FirstOrDefault()?.Name);
                 return Ok(user);
             }
 

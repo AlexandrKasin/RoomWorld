@@ -9,18 +9,22 @@ namespace Data.Entity
     {
         
         [Required]
+        [MaxLength(300)]
         public string Name { get; set; }
 
         [Required]
         public double Cost { get; set; }
 
         [Required]
+        [MaxLength(1000)]
         public string Description { get; set; }
 
         [Required]
+        [MinLength(1)]
         public int Accommodates { get; set; }
 
         [Required]
+        [MaxLength(100)]
         public string SpaceOffered { get; set; }
 
         [Required]
