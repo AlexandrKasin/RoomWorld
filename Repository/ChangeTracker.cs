@@ -19,10 +19,8 @@ namespace Repository
                     case EntityState.Modified:
                         baseAudit.ModifiedDate = now;
                         break;
-
                     case EntityState.Added:
                         baseAudit.CreatedDate = now;
-                        baseAudit.ModifiedBy = null;
                         break;
                 }
             }
