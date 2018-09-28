@@ -20,7 +20,6 @@ namespace Data.Entity
         public string Description { get; set; }
 
         [Required]
-        [MinLength(1)]
         public int Accommodates { get; set; }
 
         [Required]
