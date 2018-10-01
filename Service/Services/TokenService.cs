@@ -28,7 +28,7 @@ namespace Service.Services
 
         private static ClaimsIdentity GetIdentity(User user)
         {
-            if (user is null) return null;
+            if (user == null) return null;
             var claims = new List<Claim>
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
@@ -47,7 +47,7 @@ namespace Service.Services
             var user = await (await _repository.GetAllAsync(t => t.Email == authorize.Email)).FirstOrDefaultAsync();
             
             var identity = GetIdentity(user);
-            if (identity is null || user.Password != authorize.Password)
+            if (identity == null || user.Password != authorize.Password)
             {
                 throw new ArgumentException("Invalid username or password.");
             }

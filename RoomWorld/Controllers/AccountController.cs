@@ -29,9 +29,7 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                await _registrationService.RegistrateUserAsunc(user);
-                var responce =
-                    await _tokenService.GetTokenAsunc(new Authorize() {Email = user.Email, Password = user.Password});
+                var responce = await _registrationService.RegistrateUserAsunc(user);
                 return Ok(responce);
             }
             catch (ArgumentException)
@@ -71,6 +69,23 @@ namespace RoomWorld.Controllers
             {
                 var user = await _profileService.GetProflieByEmailAsync(User.Identities.FirstOrDefault()?.Name);
                 return Ok(user);
+            }
+
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost("/user/change/password")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword(ChangePasswordParams changePasswordParams)
+        {
+            try
+            {
+                await _registrationService.ChangePasswordAsync(changePasswordParams,
+                    User.Identities.FirstOrDefault()?.Name);
+                return Ok();
             }
 
             catch (Exception e)

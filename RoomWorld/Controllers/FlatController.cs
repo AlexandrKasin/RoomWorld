@@ -55,6 +55,37 @@ namespace RoomWorld.Controllers
             }
         }
 
+        [HttpGet("/user/orders")]
+        [Authorize]
+        public async Task<IActionResult> OrderedFlats()
+        {
+            try
+            {
+                var orders = await _orderService.GetOrdersByEmailAsync(User.Identities.FirstOrDefault()?.Name);
+                return Ok(orders);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+        }
+
+
+        [HttpGet("/user/flats/orders")]
+        [Authorize]
+        public async Task<IActionResult> OrderForUserFlats()
+        {
+            try
+            {
+                var orders = await _orderService.GetOrdersForUsersFlatsAsync(User.Identities.FirstOrDefault()?.Name);
+                return Ok(orders);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+        }
+
         [HttpPost("/order")]
         [Authorize]
         public async Task<IActionResult> OrderFlat(OrderParams orderParams)

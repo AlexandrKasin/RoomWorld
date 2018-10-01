@@ -5,6 +5,7 @@ namespace Service.Services
 {
     public interface IRegistrationService
     {
-        Task RegistrateUserAsunc(User user);
+        Task<Token> RegistrateUserAsunc(User user);
+        Task ChangePasswordAsync(ChangePasswordParams changePasswordParams, string email);
     }
 }

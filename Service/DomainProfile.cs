@@ -15,6 +15,7 @@ namespace Service
             CreateMap<Amenties, AmenitiesViewModel>();
             CreateMap<Image, ImageViewModel>();
             CreateMap<Order, OrderViewModel>();
+            CreateMap<OrderedFlatViewModel, Order>();
         }
     }
 }

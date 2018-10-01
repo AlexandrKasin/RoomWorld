@@ -27,7 +27,7 @@ namespace Service.Services
                 .FirstOrDefaultAsync();
             user.Flats =
                 new List<Flat>(
-                    await _flatService.GetAllAsync(x => x.User.Id == user.Id, x => x.Location, x => x.Images));
+                    await _flatService.GetAllAsync(x => x.User.Id == user.Id, x => x.Location, x => x.Images, x => x.Orders));
             return _mapper.Map<UserViewModel>(user);
         }
     }

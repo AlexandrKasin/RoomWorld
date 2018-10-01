@@ -47,6 +47,7 @@ namespace Repository.Repositories
         public async Task UpdateAsync(T entity)
         {
             if (entity is null) throw new ArgumentNullException(nameof(entity));
+            _entitySet.Update(entity);
             await _databaseContext.SaveChangesAsync();
         }
 
