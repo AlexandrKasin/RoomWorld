@@ -5,6 +5,7 @@ using Data.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service;
+using Service.dto;
 using Service.Services;
 
 namespace RoomWorld.Controllers
@@ -31,6 +32,24 @@ namespace RoomWorld.Controllers
             {
                 var responce = await _registrationService.RegistrateUserAsunc(user);
                 return Ok(responce);
+            }
+            catch (ArgumentException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost("/user/change/profile")]
+        public async Task<IActionResult> ChangeProfile(UserViewModel user)
+        {
+            try
+            {
+                await _profileService.ChangeProfileAsync(user);
+                return Ok();
             }
             catch (ArgumentException)
             {
