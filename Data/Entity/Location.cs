@@ -6,9 +6,11 @@ namespace Data.Entity
     public class Location : BaseEntity
     {
         [Required]
+        [MaxLength(200)]
         public string Country { get; set; }
 
         [Required]
+        [MaxLength(200)]
         public string City { get; set; }
 
         [Required]

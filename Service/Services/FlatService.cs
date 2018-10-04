@@ -13,15 +13,16 @@ namespace Service.Services
 {
     public class FlatService : IFlatService
     {
-        private readonly IRepository<Flat> _repository;
-        private readonly IUserService _userService;
+        private readonly IRepository<Flat> _flatRepository;
+        private readonly IRepository<User> _userRepository;
         private readonly IMapper _mapper;
 
-        public FlatService(IRepository<Flat> repository, IUserService userService, IMapper mapper)
+        public FlatService(IRepository<Flat> flatRepository, IMapper mapper,
+            IRepository<User> userRepository)
         {
-            _repository = repository;
-            _userService = userService;
+            _flatRepository = flatRepository;
             _mapper = mapper;
+            _userRepository = userRepository;
         }
 
 
@@ -35,36 +36,37 @@ namespace Service.Services
             }
 
             flat.Images = imageCollection;
-            flat.User = await (await _userService.GetAllAsync(x => x.Email == email)).FirstOrDefaultAsync();
-            await _repository.InsertAsync(flat);
+            flat.CreatedBy = (await (await _userRepository.GetAllAsync(x => x.Email == email)).FirstOrDefaultAsync())
+                .Id;
+            flat.User = await (await _userRepository.GetAllAsync(x => x.Email == email)).FirstOrDefaultAsync();
+            await _flatRepository.InsertAsync(flat);
         }
 
         public async Task<FlatViewModel> GetFlatByIdAsunc(int id)
         {
-            return _mapper.Map<FlatViewModel>(await (await GetAllAsync(x => x.Id == id,
+            return _mapper.Map<FlatViewModel>(await (await _flatRepository.GetAllAsync(x => x.Id == id,
                     x => x.Location,
                     x => x.Amentieses,
-                    x => x.Extrases,
                     x => x.HouseRuleses,
                     x => x.Images,
                     x => x.Orders))
                 .FirstOrDefaultAsync());
         }
 
-        public async Task<IQueryable<Flat>> GetAllAsync(Expression<Func<Flat, bool>> predicate,
+        public async Task<ICollection<Flat>> GetAllAsync(Expression<Func<Flat, bool>> predicate,
             params Expression<Func<Flat, object>>[] includeParams)
         {
-            return await _repository.GetAllAsync(predicate, includeParams);
+            return await (await _flatRepository.GetAllAsync(predicate, includeParams)).ToListAsync();
         }
 
         public async Task UpdateFlatAsunc(Flat flat)
         {
-            await _repository.UpdateAsync(flat);
+            await _flatRepository.UpdateAsync(flat);
         }
 
         public async Task DeleteFlatAsunc(Flat flat)
         {
-            await _repository.DeleteAsync(flat);
+            await _flatRepository.DeleteAsync(flat);
         }
 
         public async Task<ICollection<FlatViewModel>> SearchFlatAsunc(SearchParams searchParams)
@@ -79,7 +81,7 @@ namespace Service.Services
                                   o.DateTo.Date >= searchParams.DateTo.Date)
                              && !(o.DateFrom.Date > searchParams.DateFrom.Date &&
                                   o.DateFrom.Date < searchParams.DateTo.Date))
-                    , x => x.Location, x => x.Amentieses, x => x.Extrases, x => x.HouseRuleses, x => x.Images))
+                    , x => x.Location, x => x.Amentieses, x => x.HouseRuleses, x => x.Images))
                 .Skip(searchParams.Skip)
                 .Take(searchParams.Take);
             return _mapper.Map<ICollection<FlatViewModel>>(flats);

@@ -12,7 +12,7 @@ namespace Service.Services
     {
         Task AddFlatAsunc(Flat flat, string email);
         Task<FlatViewModel> GetFlatByIdAsunc(int id);
-        Task<IQueryable<Flat>> GetAllAsync(Expression<Func<Flat, bool>> predicate = null, params Expression<Func<Flat, object>>[] includeParams);
+        Task<ICollection<Flat>> GetAllAsync(Expression<Func<Flat, bool>> predicate = null, params Expression<Func<Flat, object>>[] includeParams);
         Task UpdateFlatAsunc(Flat flat);
         Task DeleteFlatAsunc(Flat flat);
         Task<ICollection<FlatViewModel>> SearchFlatAsunc(SearchParams searchParams);

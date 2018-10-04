@@ -14,17 +14,17 @@ namespace Service.Services
     public class OrderService : IOrderService
     {
         private readonly IRepository<Order> _orderRepository;
-        private readonly IFlatService _flatService;
-        private readonly IUserService _userService;
+        private readonly IRepository<Flat> _flatRepository;
+        private readonly IRepository<User> _userRepository;
         private readonly IMapper _mapper;
 
-        public OrderService(IRepository<Order> orderRepository, IFlatService flatService, IUserService userService,
-            IMapper mapper)
+        public OrderService(IRepository<Order> orderRepository, IMapper mapper, IRepository<Flat> flatRepository,
+            IRepository<User> userRepository)
         {
             _orderRepository = orderRepository;
-            _flatService = flatService;
-            _userService = userService;
             _mapper = mapper;
+            _flatRepository = flatRepository;
+            _userRepository = userRepository;
         }
 
         public async Task AddOrderAsunc(OrderParams orderParams, string email)
@@ -33,9 +33,9 @@ namespace Service.Services
             {
                 DateFrom = orderParams.DateFrom,
                 DateTo = orderParams.DateTo,
-                Flat = await (await _flatService.GetAllAsync(x => x.Id == orderParams.IdFlat)).FirstOrDefaultAsync(),
+                Flat = await (await _flatRepository.GetAllAsync(x => x.Id == orderParams.IdFlat)).FirstOrDefaultAsync(),
                 Price = orderParams.Price,
-                User = (await _userService.GetAllAsync(x => x.Email == email)).FirstOrDefault()
+                User = (await _userRepository.GetAllAsync(x => x.Email == email)).FirstOrDefault()
             };
             await _orderRepository.InsertAsync(order);
         }

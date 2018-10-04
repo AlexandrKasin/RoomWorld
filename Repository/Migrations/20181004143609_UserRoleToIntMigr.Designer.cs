@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository.Models;
 
 namespace Repository.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20181004143609_UserRoleToIntMigr")]
+    partial class UserRoleToIntMigr
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,6 +50,35 @@ namespace Repository.Migrations
                     b.HasIndex("FlatId");
 
                     b.ToTable("Amentiese");
+                });
+
+            modelBuilder.Entity("Data.Entity.Extras", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Cost")
+                        .IsRequired();
+
+                    b.Property<long>("CreatedBy");
+
+                    b.Property<DateTime>("CreatedDate");
+
+                    b.Property<long?>("FlatId");
+
+                    b.Property<long?>("ModifiedBy");
+
+                    b.Property<DateTime?>("ModifiedDate");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FlatId");
+
+                    b.ToTable("Extrase");
                 });
 
             modelBuilder.Entity("Data.Entity.Flat", b =>
@@ -165,12 +196,10 @@ namespace Repository.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("City")
-                        .IsRequired()
-                        .HasMaxLength(200);
+                        .IsRequired();
 
                     b.Property<string>("Country")
-                        .IsRequired()
-                        .HasMaxLength(200);
+                        .IsRequired();
 
                     b.Property<long>("CreatedBy");
 
@@ -271,6 +300,13 @@ namespace Repository.Migrations
                 {
                     b.HasOne("Data.Entity.Flat", "Flat")
                         .WithMany("Amentieses")
+                        .HasForeignKey("FlatId");
+                });
+
+            modelBuilder.Entity("Data.Entity.Extras", b =>
+                {
+                    b.HasOne("Data.Entity.Flat", "Flat")
+                        .WithMany("Extrases")
                         .HasForeignKey("FlatId");
                 });
 

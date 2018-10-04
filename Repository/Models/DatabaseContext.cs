@@ -9,7 +9,6 @@ namespace Repository.Models
     {
         public DbSet<User> User { get; set; }
         public DbSet<Amenties> Amentiese { get; set; }
-        public DbSet<Extras> Extrase { get; set; }
         public DbSet<Location> Location { get; set; }
         public DbSet<Flat> Flat { get; set; }
         public DbSet<HouseRules> HouseRulese { get; set; }

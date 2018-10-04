@@ -32,7 +32,7 @@ namespace Service.Services
             var claims = new List<Claim>
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role)
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role.ToString())
             };
             var claimsIdentity =
                 new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,

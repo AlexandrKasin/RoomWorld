@@ -10,27 +10,24 @@ namespace Service.Services
 {
     public class ProfileService : IProfileService
     {
-        private readonly IUserService _userService;
-        private readonly IFlatService _flatService;
         private readonly IMapper _mapper;
+        private readonly IRepository<Flat> _flatRepository;
         private readonly IRepository<User> _userRepository;
 
-        public ProfileService(IUserService userService, IFlatService flatService,
-            IMapper mapper, IRepository<User> userRepository)
+        public ProfileService(IMapper mapper, IRepository<User> userRepository, IRepository<Flat> flatRepository)
         {
-            _userService = userService;
-            _flatService = flatService;
             _mapper = mapper;
             _userRepository = userRepository;
+            _flatRepository = flatRepository;
         }
 
         public async Task<UserViewModel> GetProflieByEmailAsync(string email)
         {
-            var user = await (await _userService.GetAllAsync(t => t.Email == email))
+            var user = await (await _userRepository.GetAllAsync(t => t.Email == email))
                 .FirstOrDefaultAsync();
             user.Flats =
                 new List<Flat>(
-                    await _flatService.GetAllAsync(x => x.User.Id == user.Id, x => x.Location, x => x.Images,
+                    await _flatRepository.GetAllAsync(x => x.User.Id == user.Id, x => x.Location, x => x.Images,
                         x => x.Orders));
             return _mapper.Map<UserViewModel>(user);
         }

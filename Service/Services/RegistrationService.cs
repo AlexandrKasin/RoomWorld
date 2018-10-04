@@ -24,7 +24,7 @@ namespace Service.Services
         public async Task<Token> RegistrateUserAsunc(User user)
         {
             var password = user.Password;
-            user.Role = Role.User.ToString();
+            user.Role = (int)Role.User;
             var systemUser = await _repositoryUser.GetAllAsync(t => t.Email == "system@admin.com").Result
                 .FirstOrDefaultAsync();
             user.CreatedBy = systemUser.Id;

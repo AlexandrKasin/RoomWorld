@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Linq;
+using System.Collections;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using Repository.Repositories;
 
 namespace Service.Services
@@ -27,9 +28,9 @@ namespace Service.Services
             return await _repository.GetByIdAsync(id);
         }
 
-        public async Task<IQueryable<User>> GetAllAsync(Expression<Func<User, bool>> predicate = null, params Expression<Func<User, object>>[] includeParams)
+        public async Task<IList> GetAllAsync(Expression<Func<User, bool>> predicate = null, params Expression<Func<User, object>>[] includeParams)
         {
-            return await _repository.GetAllAsync(predicate, includeParams);
+            return await (await _repository.GetAllAsync(predicate, includeParams)).ToListAsync();
         }
 
 
