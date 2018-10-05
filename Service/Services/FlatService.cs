@@ -85,8 +85,8 @@ namespace Service.Services
         public async Task<ICollection<FlatViewModel>> SearchFlatAsync(SearchParams searchParams)
         {
             var flats = (await _flatRepository.GetAllAsync(
-                    x => x.Location.Country.ToLower() == searchParams.Country.ToLower()
-                         && x.Location.City.ToLower() == searchParams.City.ToLower()
+                    x => String.Equals(x.Location.Country, searchParams.Country, StringComparison.CurrentCultureIgnoreCase)
+                         && String.Equals(x.Location.City, searchParams.City, StringComparison.CurrentCultureIgnoreCase)
                          && x.Orders.All(o =>
                              !(o.DateFrom.Date <= searchParams.DateFrom.Date &&
                                o.DateTo.Date >= searchParams.DateFrom.Date)

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data.Entity;
@@ -26,9 +27,8 @@ namespace Service.Services
             var user = await (await _userRepository.GetAllAsync(t => t.Email == email))
                 .FirstOrDefaultAsync();
             user.Flats =
-                new List<Flat>(
-                    await _flatRepository.GetAllAsync(x => x.User.Id == user.Id, x => x.Location, x => x.Images,
-                        x => x.Orders));
+                    await (await _flatRepository.GetAllAsync(x => x.User.Id == user.Id, x => x.Location, x => x.Images,
+                        x => x.Orders)).ToListAsync();
             return _mapper.Map<UserViewModel>(user);
         }
 
@@ -36,10 +36,14 @@ namespace Service.Services
         {
             var currentUser =
                 await (await _userRepository.GetAllAsync(x => x.Email == user.Email)).FirstOrDefaultAsync();
-            currentUser.Name = user.Name;
-            currentUser.Surname = user.Surname;
-            currentUser.PhoneNumber = user.PhoneNumber;
-            await _userRepository.UpdateAsync(currentUser);
+            if (currentUser != null)
+            {
+                currentUser.Name = user.Name;
+                currentUser.Surname = user.Surname;
+                currentUser.PhoneNumber = user.PhoneNumber;
+                await _userRepository.UpdateAsync(currentUser);
+            }
+            
         }
     }
 }
