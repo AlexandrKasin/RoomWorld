@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Data.Entity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service;
 using Service.Services;
@@ -14,30 +13,10 @@ namespace RoomWorld.Controllers
     public class FlatController : Controller
     {
         private readonly IFlatService _flatService;
-        private readonly IOrderService _orderService;
-        private readonly IUploadImagesService _uploadImagesService;
 
-        public FlatController(IFlatService flatService,
-            IOrderService orderService, IUploadImagesService uploadImagesService)
+        public FlatController(IFlatService flatService)
         {
             _flatService = flatService;
-            _orderService = orderService;
-            _uploadImagesService = uploadImagesService;
-        }
-
-        [HttpPost("/upload/images")]
-        [Authorize]
-        public async Task<IActionResult> RentFlat(IFormCollection formFile)
-        {
-            try
-            {
-                await _uploadImagesService.UploadAsync(formFile, User.Identities.FirstOrDefault()?.Name);
-                return Ok();
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e);
-            }
         }
 
         [HttpPost("/place/new")]
@@ -46,7 +25,7 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                await _flatService.AddFlatAsunc(flat, User.Identities.FirstOrDefault()?.Name);
+                await _flatService.AddFlatAsync(flat, User.Identities.FirstOrDefault()?.Name);
                 return Ok();
             }
             catch (Exception e)
@@ -55,51 +34,6 @@ namespace RoomWorld.Controllers
             }
         }
 
-        [HttpGet("/user/orders")]
-        [Authorize]
-        public async Task<IActionResult> OrderedFlats()
-        {
-            try
-            {
-                var orders = await _orderService.GetOrdersByEmailAsync(User.Identities.FirstOrDefault()?.Name);
-                return Ok(orders);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e);
-            }
-        }
-
-
-        [HttpGet("/user/flats/orders")]
-        [Authorize]
-        public async Task<IActionResult> OrderForUserFlats()
-        {
-            try
-            {
-                var orders = await _orderService.GetOrdersForUsersFlatsAsync(User.Identities.FirstOrDefault()?.Name);
-                return Ok(orders);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e);
-            }
-        }
-
-        [HttpPost("/order")]
-        [Authorize]
-        public async Task<IActionResult> OrderFlat(OrderParams orderParams)
-        {
-            try
-            {
-                await _orderService.AddOrderAsunc(orderParams, User.Identities.FirstOrDefault()?.Name);
-                return Ok();
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e);
-            }
-        }
 
         [HttpGet("/flat")]
         [Authorize]
@@ -107,7 +41,7 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                return Ok(await _flatService.GetFlatByIdAsunc(id));
+                return Ok(await _flatService.GetFlatByIdAsync(id));
             }
             catch (Exception e)
             {
@@ -115,22 +49,13 @@ namespace RoomWorld.Controllers
             }
         }
 
-        [HttpPost("/places/amount")]
+        [HttpGet("/places/amount")]
         [Authorize]
-        public async Task<IActionResult> AmountFlatByLoation(SearchParams searchParams)
+        public async Task<IActionResult> AmountFlatByLoation([FromHeader] SearchParams searchParams)
         {
             try
             {
-                var amountFlats = (await _flatService.GetAllAsync(
-                    x => x.Location.Country.ToLower() == searchParams.Country.ToLower()
-                         && x.Location.City.ToLower() == searchParams.City.ToLower()
-                         && x.Orders.All(o =>
-                             !(o.DateFrom.Date <= searchParams.DateFrom.Date &&
-                               o.DateTo.Date >= searchParams.DateFrom.Date) &&
-                             !(o.DateFrom.Date <= searchParams.DateTo.Date &&
-                               o.DateTo.Date >= searchParams.DateTo.Date) &&
-                             !(o.DateFrom.Date > searchParams.DateFrom.Date &&
-                               o.DateFrom.Date < searchParams.DateTo.Date)), x => x.Location)).Count();
+                var amountFlats = await _flatService.AmountFlatByParamsAsync(searchParams);
                 return Ok(amountFlats);
             }
             catch (Exception e)
@@ -139,13 +64,13 @@ namespace RoomWorld.Controllers
             }
         }
 
-        [HttpPost("/search")]
+        [HttpGet("/search")]
         [Authorize]
-        public async Task<IActionResult> SearchFlats(SearchParams searchParams)
+        public async Task<IActionResult> SearchFlats([FromHeader] SearchParams searchParams)
         {
             try
             {
-                var flats = await _flatService.SearchFlatAsunc(searchParams);
+                var flats = await _flatService.SearchFlatAsync(searchParams);
                 return Ok(flats);
             }
             catch (Exception e)

@@ -40,7 +40,7 @@ namespace Service.Services
             return claimsIdentity;
         }
 
-        public async Task<Token> GetTokenAsunc(Authorize authorize)
+        public async Task<Token> GetTokenAsync(Authorize authorize)
         {
             authorize.Password = _hashMd5Service.GetMd5Hash(authorize.Password);
 

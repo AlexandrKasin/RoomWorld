@@ -18,12 +18,12 @@ namespace Service.Services
             _repository = repository;
         }
 
-        public async Task AddUserAsunc(User user)
+        public async Task AddUserAsync(User user)
         {
             await _repository.InsertAsync(user);
         }
 
-        public async Task<User> GetUserByIdAsunc(int id)
+        public async Task<User> GetUserByIdAsync(int id)
         {
             return await _repository.GetByIdAsync(id);
         }
@@ -34,12 +34,12 @@ namespace Service.Services
         }
 
 
-        public async Task UpdateUserAsunc(User user)
+        public async Task UpdateUserAsync(User user)
         {
             await _repository.UpdateAsync(user);
         }
 
-        public async Task DeleteUserAsunc(User user)
+        public async Task DeleteUserAsync(User user)
         {
             await _repository.DeleteAsync(user);
         } 

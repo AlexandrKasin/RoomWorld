@@ -25,8 +25,21 @@ namespace Service.Services
             _userRepository = userRepository;
         }
 
+        public async Task<int> AmountFlatByParamsAsync(SearchParams searchParams)
+        {
+            return (await _flatRepository.GetAllAsync(
+                x => x.Location.Country.ToLower() == searchParams.Country.ToLower()
+                     && x.Location.City.ToLower() == searchParams.City.ToLower()
+                     && x.Orders.All(o =>
+                         !(o.DateFrom.Date <= searchParams.DateFrom.Date &&
+                           o.DateTo.Date >= searchParams.DateFrom.Date) &&
+                         !(o.DateFrom.Date <= searchParams.DateTo.Date &&
+                           o.DateTo.Date >= searchParams.DateTo.Date) &&
+                         !(o.DateFrom.Date > searchParams.DateFrom.Date &&
+                           o.DateFrom.Date < searchParams.DateTo.Date)), x => x.Location)).Count();
+        }
 
-        public async Task AddFlatAsunc(Flat flat, string email)
+        public async Task AddFlatAsync(Flat flat, string email)
         {
             var path = @"\images\uploaded\" + email + @"\";
             var imageCollection = new List<Image>(flat.Images);
@@ -42,7 +55,7 @@ namespace Service.Services
             await _flatRepository.InsertAsync(flat);
         }
 
-        public async Task<FlatViewModel> GetFlatByIdAsunc(int id)
+        public async Task<FlatViewModel> GetFlatByIdAsync(int id)
         {
             return _mapper.Map<FlatViewModel>(await (await _flatRepository.GetAllAsync(x => x.Id == id,
                     x => x.Location,
@@ -59,19 +72,19 @@ namespace Service.Services
             return await (await _flatRepository.GetAllAsync(predicate, includeParams)).ToListAsync();
         }
 
-        public async Task UpdateFlatAsunc(Flat flat)
+        public async Task UpdateFlatAsync(Flat flat)
         {
             await _flatRepository.UpdateAsync(flat);
         }
 
-        public async Task DeleteFlatAsunc(Flat flat)
+        public async Task DeleteFlatAsync(Flat flat)
         {
             await _flatRepository.DeleteAsync(flat);
         }
 
-        public async Task<ICollection<FlatViewModel>> SearchFlatAsunc(SearchParams searchParams)
+        public async Task<ICollection<FlatViewModel>> SearchFlatAsync(SearchParams searchParams)
         {
-            var flats = (await GetAllAsync(
+            var flats = (await _flatRepository.GetAllAsync(
                     x => x.Location.Country.ToLower() == searchParams.Country.ToLower()
                          && x.Location.City.ToLower() == searchParams.City.ToLower()
                          && x.Orders.All(o =>

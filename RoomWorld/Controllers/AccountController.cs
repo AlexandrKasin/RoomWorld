@@ -30,7 +30,7 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                var responce = await _registrationService.RegistrateUserAsunc(user);
+                var responce = await _registrationService.RegistrateUserAsync(user);
                 return Ok(responce);
             }
             catch (ArgumentException)
@@ -43,7 +43,7 @@ namespace RoomWorld.Controllers
             }
         }
 
-        [HttpPost("/user/change/profile")]
+        [HttpPut("/user/change/profile")]
         public async Task<IActionResult> ChangeProfile(UserViewModel user)
         {
             try
@@ -67,7 +67,7 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                var response = await _tokenService.GetTokenAsunc(authorize);
+                var response = await _tokenService.GetTokenAsync(authorize);
                 return Ok(response);
             }
             catch (ArgumentException)
@@ -80,7 +80,7 @@ namespace RoomWorld.Controllers
             }
         }
 
-        [HttpPost("/user/profile")]
+        [HttpGet("/user/profile")]
         [Authorize]
         public async Task<IActionResult> Profile()
         {
@@ -96,7 +96,7 @@ namespace RoomWorld.Controllers
             }
         }
 
-        [HttpPost("/user/change/password")]
+        [HttpPut("/user/change/password")]
         [Authorize]
         public async Task<IActionResult> ChangePassword(ChangePasswordParams changePasswordParams)
         {

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Data.Entity;
 using Microsoft.EntityFrameworkCore;
 using Repository.Repositories;
-using Service.dto;
 
 namespace Service.Services
 {
@@ -21,15 +20,15 @@ namespace Service.Services
             _tokenService = tokenService;
         }
 
-        public async Task<Token> RegistrateUserAsunc(User user)
+        public async Task<Token> RegistrateUserAsync(User user)
         {
             var password = user.Password;
             user.Role = (int)Role.User;
-            var systemUser = await _repositoryUser.GetAllAsync(t => t.Email == "system@admin.com").Result
+            var systemUser = await (await _repositoryUser.GetAllAsync(t => t.Email == "system@admin.com"))
                 .FirstOrDefaultAsync();
             user.CreatedBy = systemUser.Id;
 
-            var exists = (await _repositoryUser.GetAllAsync(t => t.Email == user.Email)).Any();
+            var exists = await (await _repositoryUser.GetAllAsync(t => t.Email == user.Email)).AnyAsync();
             if (exists)
             {
                 throw new ArgumentException("This email already exists.");
@@ -37,7 +36,7 @@ namespace Service.Services
 
             user.Password = _hashMd5Service.GetMd5Hash(user.Password);
             await _repositoryUser.InsertAsync(user);
-            var token = await _tokenService.GetTokenAsunc(new Authorize() { Email = user.Email, Password = password });
+            var token = await _tokenService.GetTokenAsync(new Authorize() { Email = user.Email, Password = password });
             return token;
         }
 
