@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Service.Services;
 
 namespace RoomWorld.Controllers
@@ -26,6 +27,10 @@ namespace RoomWorld.Controllers
             {
                 await _uploadImagesService.UploadAsync(formFile, User.Identities.FirstOrDefault()?.Name);
                 return Ok();
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                return BadRequest(e.Message);
             }
             catch (Exception e)
             {

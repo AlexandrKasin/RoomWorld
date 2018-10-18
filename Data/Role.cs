@@ -1,8 +1,8 @@
-﻿namespace Service
+﻿namespace Data
 {
     public enum Role
     {
-        Admin,
+        Admin = 1,
         User
     }
 }

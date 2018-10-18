@@ -14,7 +14,7 @@ namespace Data.Entity
         public string Surname { get; set; }
 
         [Required]
-        public int Role { get; set; }
+        public Role Role { get; set; }
 
         [Required]
         [EmailAddress]

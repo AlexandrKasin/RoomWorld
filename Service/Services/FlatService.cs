@@ -28,15 +28,13 @@ namespace Service.Services
         public async Task<int> AmountFlatByParamsAsync(SearchParams searchParams)
         {
             return (await _flatRepository.GetAllAsync(
-                x => x.Location.Country.ToLower() == searchParams.Country.ToLower()
-                     && x.Location.City.ToLower() == searchParams.City.ToLower()
+                x => String.Equals(x.Location.Country, searchParams.Country, StringComparison.CurrentCultureIgnoreCase)
+                     && String.Equals(x.Location.City, searchParams.City, StringComparison.CurrentCultureIgnoreCase)
                      && x.Orders.All(o =>
-                         !(o.DateFrom.Date <= searchParams.DateFrom.Date &&
-                           o.DateTo.Date >= searchParams.DateFrom.Date) &&
-                         !(o.DateFrom.Date <= searchParams.DateTo.Date &&
-                           o.DateTo.Date >= searchParams.DateTo.Date) &&
-                         !(o.DateFrom.Date > searchParams.DateFrom.Date &&
-                           o.DateFrom.Date < searchParams.DateTo.Date)), x => x.Location)).Count();
+                         !(o.DateFrom.Date <= searchParams.DateFrom.Date && o.DateTo.Date >= searchParams.DateFrom.Date) &&
+                         !(o.DateFrom.Date <= searchParams.DateTo.Date && o.DateTo.Date >= searchParams.DateTo.Date) &&
+                         !(o.DateFrom.Date > searchParams.DateFrom.Date && o.DateFrom.Date < searchParams.DateTo.Date)), x => x.Location))
+                .Count();
         }
 
         public async Task AddFlatAsync(Flat flat, string email)
@@ -66,7 +64,7 @@ namespace Service.Services
                 .FirstOrDefaultAsync());
         }
 
-        public async Task<ICollection<Flat>> GetAllAsync(Expression<Func<Flat, bool>> predicate,
+        public async Task<IList<Flat>> GetAllAsync(Expression<Func<Flat, bool>> predicate,
             params Expression<Func<Flat, object>>[] includeParams)
         {
             return await (await _flatRepository.GetAllAsync(predicate, includeParams)).ToListAsync();
@@ -82,22 +80,19 @@ namespace Service.Services
             await _flatRepository.DeleteAsync(flat);
         }
 
-        public async Task<ICollection<FlatViewModel>> SearchFlatAsync(SearchParams searchParams)
+        public async Task<IList<FlatViewModel>> SearchFlatAsync(SearchParams searchParams)
         {
             var flats = (await _flatRepository.GetAllAsync(
                     x => String.Equals(x.Location.Country, searchParams.Country, StringComparison.CurrentCultureIgnoreCase)
                          && String.Equals(x.Location.City, searchParams.City, StringComparison.CurrentCultureIgnoreCase)
                          && x.Orders.All(o =>
-                             !(o.DateFrom.Date <= searchParams.DateFrom.Date &&
-                               o.DateTo.Date >= searchParams.DateFrom.Date)
-                             && !(o.DateFrom.Date <= searchParams.DateTo.Date &&
-                                  o.DateTo.Date >= searchParams.DateTo.Date)
-                             && !(o.DateFrom.Date > searchParams.DateFrom.Date &&
-                                  o.DateFrom.Date < searchParams.DateTo.Date))
+                             !(o.DateFrom.Date <= searchParams.DateFrom.Date && o.DateTo.Date >= searchParams.DateFrom.Date) && 
+                             !(o.DateFrom.Date <= searchParams.DateTo.Date && o.DateTo.Date >= searchParams.DateTo.Date) && 
+                             !(o.DateFrom.Date > searchParams.DateFrom.Date && o.DateFrom.Date < searchParams.DateTo.Date))
                     , x => x.Location, x => x.Amentieses, x => x.HouseRuleses, x => x.Images))
                 .Skip(searchParams.Skip)
                 .Take(searchParams.Take);
-            return _mapper.Map<ICollection<FlatViewModel>>(flats);
+            return _mapper.Map<IList<FlatViewModel>>(flats);
         }
     }
 }

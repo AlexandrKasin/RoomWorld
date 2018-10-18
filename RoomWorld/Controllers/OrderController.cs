@@ -3,7 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Service;
+using Service.Exceptions;
 using Service.Services;
 
 namespace RoomWorld.Controllers
@@ -24,8 +26,12 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                var orders = await _orderService.GetOrdersByEmailAsync(User.Identities.FirstOrDefault()?.Name);
+                var orders = await _orderService.GetOrdersByEmailAsync();
                 return Ok(orders);
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                return BadRequest(e.Message);
             }
             catch (Exception e)
             {
@@ -40,8 +46,12 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                var orders = await _orderService.GetOrdersForUsersFlatsAsync(User.Identities.FirstOrDefault()?.Name);
+                var orders = await _orderService.GetOrdersForUsersFlatsAsync();
                 return Ok(orders);
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                return BadRequest(e.Message);
             }
             catch (Exception e)
             {
@@ -55,8 +65,16 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                await _orderService.AddOrderAsync(orderParams, User.Identities.FirstOrDefault()?.Name);
+                await _orderService.AddOrderAsync(orderParams);
                 return Ok();
+            }
+            catch (FlatNotFoundException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                return BadRequest(e.Message);
             }
             catch (Exception e)
             {

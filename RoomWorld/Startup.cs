@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Repository.Models;
 using Repository.Repositories;
+using Service;
 using Service.Services;
 
 namespace RoomWorld
@@ -28,26 +29,29 @@ namespace RoomWorld
         {
             services.AddDbContext<DatabaseContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddAutoMapper();
-
+            services.AddHttpContextAccessor();
+            services.AddSession();
+            services.AddSignalR();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
                     options.RequireHttpsMetadata = false;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidateIssuer = true, 
+                        ValidateIssuer = true,
                         ValidIssuer = Configuration["AuthOption:Issuer"],
                         ValidateAudience = true,
                         ValidAudience = Configuration["AuthOption:Audience"],
                         ValidateLifetime = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["AuthOption:Key"])),
+                        IssuerSigningKey =
+                            new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["AuthOption:Key"])),
                         ValidateIssuerSigningKey = true,
                     };
                 });
-            
+
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITokenService, TokenService>();
@@ -57,7 +61,6 @@ namespace RoomWorld
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IProfileService, ProfileService>();
             services.AddScoped<IUploadImagesService, UploadImagesService>();
-           
 
 
             services.AddCors(o => o.AddPolicy("Allow-Origin", builder =>
@@ -88,6 +91,7 @@ namespace RoomWorld
                 app.UseHsts();
             }
 
+            app.UseSignalR(routes => { routes.MapHub<ChatHub>("/chat"); });
             app.UseHttpsRedirection();
             app.UseMvc();
         }

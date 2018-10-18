@@ -12,12 +12,12 @@ namespace Service.Services
         Task AddFlatAsync(Flat flat, string email);
         Task<FlatViewModel> GetFlatByIdAsync(int id);
 
-        Task<ICollection<Flat>> GetAllAsync(Expression<Func<Flat, bool>> predicate = null,
+        Task<IList<Flat>> GetAllAsync(Expression<Func<Flat, bool>> predicate = null,
             params Expression<Func<Flat, object>>[] includeParams);
 
         Task UpdateFlatAsync(Flat flat);
         Task DeleteFlatAsync(Flat flat);
-        Task<ICollection<FlatViewModel>> SearchFlatAsync(SearchParams searchParams);
+        Task<IList<FlatViewModel>> SearchFlatAsync(SearchParams searchParams);
         Task<int> AmountFlatByParamsAsync(SearchParams searchParams);
     }
 }

@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Data.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Service;
 using Service.dto;
+using Service.Exceptions;
 using Service.Services;
 
 namespace RoomWorld.Controllers
@@ -30,12 +31,12 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                var responce = await _registrationService.RegistrateUserAsync(user);
+                var responce = await _registrationService.RegisterUserAsync(user);
                 return Ok(responce);
             }
-            catch (ArgumentException)
+            catch (EmailAlredyExistsException e)
             {
-                return Unauthorized();
+                return StatusCode(401, e.Message);
             }
             catch (Exception e)
             {
@@ -51,9 +52,13 @@ namespace RoomWorld.Controllers
                 await _profileService.ChangeProfileAsync(user);
                 return Ok();
             }
-            catch (ArgumentException)
+            catch (IncorrectAuthParamsException e)
             {
-                return Unauthorized();
+                return BadRequest(e.Message);
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                return BadRequest(e.Message);
             }
             catch (Exception e)
             {
@@ -70,9 +75,13 @@ namespace RoomWorld.Controllers
                 var response = await _tokenService.GetTokenAsync(authorize);
                 return Ok(response);
             }
-            catch (ArgumentException)
+            catch (IncorrectAuthParamsException e)
             {
-                return Unauthorized();
+                return StatusCode(401, e.Message);
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                return BadRequest(e.Message);
             }
             catch (Exception e)
             {
@@ -86,10 +95,17 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                var user = await _profileService.GetProflieByEmailAsync(User.Identities.FirstOrDefault()?.Name);
+                var user = await _profileService.GetProflieByEmailAsync();
                 return Ok(user);
             }
-
+            catch (IncorrectAuthParamsException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                return BadRequest(e.Message);
+            }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
@@ -102,11 +118,17 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                await _registrationService.ChangePasswordAsync(changePasswordParams,
-                    User.Identities.FirstOrDefault()?.Name);
+                await _registrationService.ChangePasswordAsync(changePasswordParams);
                 return Ok();
             }
-
+            catch (IncorrectAuthParamsException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                return BadRequest(e.Message);
+            }
             catch (Exception e)
             {
                 return BadRequest(e.Message);

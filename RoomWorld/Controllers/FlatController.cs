@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using Data.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Service;
+using Service.Exceptions;
 using Service.Services;
 
 namespace RoomWorld.Controllers
@@ -28,6 +30,10 @@ namespace RoomWorld.Controllers
                 await _flatService.AddFlatAsync(flat, User.Identities.FirstOrDefault()?.Name);
                 return Ok();
             }
+            catch (DbUpdateConcurrencyException e)
+            {
+                return BadRequest(e.Message);
+            }
             catch (Exception e)
             {
                 return BadRequest(e);
@@ -42,6 +48,14 @@ namespace RoomWorld.Controllers
             try
             {
                 return Ok(await _flatService.GetFlatByIdAsync(id));
+            }
+            catch (FlatNotFoundException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                return BadRequest(e.Message);
             }
             catch (Exception e)
             {
@@ -58,6 +72,10 @@ namespace RoomWorld.Controllers
                 var amountFlats = await _flatService.AmountFlatByParamsAsync(searchParams);
                 return Ok(amountFlats);
             }
+            catch (DbUpdateConcurrencyException e)
+            {
+                return BadRequest(e.Message);
+            }
             catch (Exception e)
             {
                 return BadRequest(e);
@@ -72,6 +90,10 @@ namespace RoomWorld.Controllers
             {
                 var flats = await _flatService.SearchFlatAsync(searchParams);
                 return Ok(flats);
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                return BadRequest(e.Message);
             }
             catch (Exception e)
             {

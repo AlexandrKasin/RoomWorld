@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using Data.Entity;
 using Microsoft.EntityFrameworkCore;
+using DbContext = Microsoft.EntityFrameworkCore.DbContext;
+
 
 namespace Repository.Models
 {

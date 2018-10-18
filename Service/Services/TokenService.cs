@@ -9,16 +9,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Repository.Repositories;
+using Service.Exceptions;
 
 namespace Service.Services
 {
     public class TokenService : ITokenService
     {
         private readonly IRepository<User> _repository;
-
         private readonly IHashMd5Service _hashMd5Service;
-
         private readonly IConfiguration _configuration;
+
         public TokenService(IRepository<User> repository, IHashMd5Service hashMd5Service, IConfiguration configuration)
         {
             _repository = repository;
@@ -43,13 +43,13 @@ namespace Service.Services
         public async Task<Token> GetTokenAsync(Authorize authorize)
         {
             authorize.Password = _hashMd5Service.GetMd5Hash(authorize.Password);
+            var user = await (await _repository.GetAllAsync(t =>
+                t.Email == authorize.Email && t.Password == authorize.Password)).FirstOrDefaultAsync();
 
-            var user = await (await _repository.GetAllAsync(t => t.Email == authorize.Email)).FirstOrDefaultAsync();
-            
             var identity = GetIdentity(user);
-            if (identity == null || user.Password != authorize.Password)
+            if (identity == null)
             {
-                throw new ArgumentException("Invalid username or password.");
+                throw new IncorrectAuthParamsException("Incorrect email or password");
             }
 
             var now = DateTime.UtcNow;
@@ -59,9 +59,11 @@ namespace Service.Services
                 notBefore: now,
                 claims: identity.Claims,
                 expires: now.Add(TimeSpan.FromMinutes(Convert.ToInt32(_configuration["AuthOption:Lifetime"]))),
-                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["AuthOption:Key"])), SecurityAlgorithms.HmacSha256));
+                signingCredentials: new SigningCredentials(
+                    new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["AuthOption:Key"])),
+                    SecurityAlgorithms.HmacSha256));
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-            
+
             var response = new Token
             {
                 AccessToken = encodedJwt,
