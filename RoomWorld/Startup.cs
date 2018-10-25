@@ -70,6 +70,7 @@ namespace RoomWorld
                     .AllowAnyHeader()
                     .AllowCredentials();
             }));
+
             services.Configure<MvcOptions>(options =>
             {
                 options.Filters.Add(new CorsAuthorizationFilterFactory("Allow-Origin"));
@@ -80,6 +81,7 @@ namespace RoomWorld
         {
             app.UseDefaultFiles();
             app.UseStaticFiles();
+            app.UseCors("Allow-Origin");
 
             app.UseAuthentication();
             if (env.IsDevelopment())

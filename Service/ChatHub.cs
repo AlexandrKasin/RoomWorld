@@ -5,9 +5,9 @@ namespace Service
 {
     public class ChatHub : Hub
     {
-        public async Task Send(string message, string userName)
+        public async Task Send(string text, string username)
         {
-            await Clients.All.SendAsync("Send", message, userName);
+            await Clients.All.SendAsync("Send", text, username);
         }
     }
 }
