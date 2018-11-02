@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Service;
 using Service.dto;
+using Service.DTO;
 using Service.Exceptions;
 using Service.Services;
 
@@ -17,13 +18,15 @@ namespace RoomWorld.Controllers
         private readonly ITokenService _tokenService;
         private readonly IRegistrationService _registrationService;
         private readonly IProfileService _profileService;
+        private readonly IEmailService _emailService;
 
         public AccountController(ITokenService tokenService, IRegistrationService registrationService,
-            IProfileService profileService)
+            IProfileService profileService, IEmailService emailService)
         {
             _tokenService = tokenService;
             _registrationService = registrationService;
             _profileService = profileService;
+            _emailService = emailService;
         }
 
         [HttpPost("/registration")]
@@ -71,7 +74,7 @@ namespace RoomWorld.Controllers
         public async Task<IActionResult> Token(Authorize authorize)
         {
             try
-            {
+            { 
                 var response = await _tokenService.GetTokenAsync(authorize);
                 return Ok(response);
             }
@@ -126,6 +129,54 @@ namespace RoomWorld.Controllers
                 return BadRequest(e.Message);
             }
             catch (DbUpdateConcurrencyException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPut("password/reset/{email}")]
+        public async Task<IActionResult> ResetPassword(string email)
+        {
+            try
+            {
+                await _profileService.SendMessageResetPasswordAsync(email);
+                return Ok();
+            }
+            catch (EntityNotExistException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (InvalidEmailException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPut("password/change")]
+        public async Task<IActionResult> ChangePassword(ResetPasswordViewModel resetPasswordViewModel)
+        {
+            try
+            {
+                await _profileService.ResetPasswordByTokenAsync(resetPasswordViewModel);
+                return Ok();
+            }
+            catch (InvalidTokenException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (TokenExpiredException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (EntityNotExistException e)
             {
                 return BadRequest(e.Message);
             }

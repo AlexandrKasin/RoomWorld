@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Service.dto;
+using Service.DTO;
 
 namespace Service.Services
 {
@@ -7,5 +8,7 @@ namespace Service.Services
     {
         Task<UserViewModel> GetProflieByEmailAsync();
         Task ChangeProfileAsync(UserViewModel user);
+        Task SendMessageResetPasswordAsync(string email);
+        Task ResetPasswordByTokenAsync(ResetPasswordViewModel model);
     }
 }

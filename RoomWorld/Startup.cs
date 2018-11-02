@@ -1,10 +1,12 @@
 ﻿using System.Text;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +15,7 @@ using Repository.Models;
 using Repository.Repositories;
 using Service;
 using Service.Services;
+using Service.SignalR;
 
 namespace RoomWorld
 {
@@ -50,7 +53,23 @@ namespace RoomWorld
                             new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["AuthOption:Key"])),
                         ValidateIssuerSigningKey = true,
                     };
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+
+                            var path = context.HttpContext.Request.Path;
+                            if (!string.IsNullOrEmpty(accessToken) &&
+                                (path.StartsWithSegments("/chat")))
+                            {
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
+
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IUserService, UserService>();
@@ -61,6 +80,7 @@ namespace RoomWorld
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IProfileService, ProfileService>();
             services.AddScoped<IUploadImagesService, UploadImagesService>();
+            services.AddScoped<IEmailService, EmailService>();
 
 
             services.AddCors(o => o.AddPolicy("Allow-Origin", builder =>
