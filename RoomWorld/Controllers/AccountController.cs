@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Data.Entity;
 using Microsoft.AspNetCore.Authorization;
@@ -48,7 +49,7 @@ namespace RoomWorld.Controllers
         }
 
         [HttpPut("/user/change/profile")]
-        public async Task<IActionResult> ChangeProfile(UserViewModel user)
+        public async Task<IActionResult> ChangeProfile(ProfileViewModel user)
         {
             try
             {
@@ -75,7 +76,7 @@ namespace RoomWorld.Controllers
         {
             try
             { 
-                var response = await _tokenService.GetTokenAsync(authorize);
+                var response =  await _tokenService.GetTokenAsync(authorize);
                 return Ok(response);
             }
             catch (IncorrectAuthParamsException e)

@@ -5,21 +5,25 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Service.SignalR
 {
+    [Authorize]
     public class ChatHub : Hub
     {
+        public ChatHub()
+        {
+        }
+
         public async Task Send(string text, string username)
         {
             await Clients.All.SendAsync("Send", text, username);
         }
-
-        [Authorize]
+       
         public override async Task OnConnectedAsync()
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, "SignalR Users");
             await base.OnConnectedAsync();
         }
 
-        [Authorize]
+
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, "SignalR Users");

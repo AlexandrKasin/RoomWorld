@@ -72,9 +72,8 @@ namespace Service.Services
         {
             var email = _httpContextAccessor.HttpContext.User.FindFirst(ClaimsIdentity.DefaultNameClaimType).Value;
 
-            var orders = (await _orderRepository.GetAllAsync(x => x.User.Email == email, x => x.Flat, x => x.User))
-                .Include(x => x.Flat.Location)
-                .Include(x => x.Flat.Images);
+            var orders = (await _orderRepository.GetAllAsync(x => x.User.Email == email, x => x.Flat, x => x.User,
+                x => x.Flat.Location, x => x.Flat.Images));
             return _mapper.Map<IList<OrderedFlatViewModel>>(orders);
         }
 
@@ -82,9 +81,8 @@ namespace Service.Services
         {
             var email = _httpContextAccessor.HttpContext.User.FindFirst(ClaimsIdentity.DefaultNameClaimType).Value;
 
-            var orders = (await _orderRepository.GetAllAsync(x => x.Flat.User.Email == email, x => x.Flat, x => x.User))
-                .Include(x => x.Flat.Location)
-                .Include(x => x.Flat.Images);
+            var orders = (await _orderRepository.GetAllAsync(x => x.Flat.User.Email == email, x => x.Flat, x => x.User,
+                x => x.Flat.Location, x => x.Flat.Images));
             return _mapper.Map<IList<OrderedFlatViewModel>>(orders);
         }
     }

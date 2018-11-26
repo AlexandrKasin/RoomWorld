@@ -40,7 +40,7 @@ namespace Service.Services
             _hashMd5Service = hashMd5Service;
         }
 
-        public async Task<UserViewModel> GetProflieByEmailAsync()
+        public async Task<ProfileViewModel> GetProflieByEmailAsync()
         {
             var email = _httpContextAccessor.HttpContext.User.FindFirst(ClaimsIdentity.DefaultNameClaimType).Value;
             var user = await (await _userRepository.GetAllAsync(t => t.Email == email))
@@ -49,14 +49,10 @@ namespace Service.Services
             {
                 throw new IncorrectAuthParamsException("Email does not exist.");
             }
-
-            user.Flats =
-                await (await _flatRepository.GetAllAsync(x => x.User.Id == user.Id, x => x.Location, x => x.Images,
-                    x => x.Orders)).ToListAsync();
-            return _mapper.Map<UserViewModel>(user);
+            return _mapper.Map<ProfileViewModel>(user);
         }
 
-        public async Task ChangeProfileAsync(UserViewModel user)
+        public async Task ChangeProfileAsync(ProfileViewModel user)
         {
             var currentUser =
                 await (await _userRepository.GetAllAsync(x => x.Email == user.Email)).FirstOrDefaultAsync();

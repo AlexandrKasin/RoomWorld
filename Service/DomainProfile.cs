@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Data.Entity;
 using Service.dto;
+using Service.DTO;
 
 namespace Service
 {
@@ -8,7 +9,7 @@ namespace Service
     {
         public DomainProfile()
         {
-            CreateMap<User, UserViewModel>();       
+            CreateMap<User, UserViewModel>();
             CreateMap<Flat, FlatViewModel>();
             CreateMap<Location, LocationViewModel>();
             CreateMap<HouseRules, HouseRulesViewModel>();
@@ -16,6 +17,7 @@ namespace Service
             CreateMap<Image, ImageViewModel>();
             CreateMap<Order, OrderViewModel>();
             CreateMap<OrderedFlatViewModel, Order>();
+            CreateMap<User, ProfileViewModel>();
         }
     }
 }
