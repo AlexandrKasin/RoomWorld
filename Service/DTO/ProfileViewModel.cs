@@ -1,4 +1,6 @@
-﻿namespace Service.DTO
+﻿using Microsoft.AspNetCore.Http;
+
+namespace Service.DTO
 {
     public class ProfileViewModel
     {
@@ -6,10 +8,9 @@
 
         public string Surname { get; set; }
 
-        public string Role { get; set; }
-
         public string Email { get; set; }
 
         public string PhoneNumber { get; set; }
+        public IFormCollection Image { get; set; }
     }
 }

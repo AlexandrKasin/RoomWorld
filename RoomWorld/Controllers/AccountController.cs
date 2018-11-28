@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Data.Entity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Service;
@@ -49,7 +50,7 @@ namespace RoomWorld.Controllers
         }
 
         [HttpPut("/user/change/profile")]
-        public async Task<IActionResult> ChangeProfile(ProfileViewModel user)
+        public async Task<IActionResult> ChangeProfile([FromForm]ProfileViewModel user)
         {
             try
             {
@@ -99,7 +100,7 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                var user = await _profileService.GetProflieByEmailAsync();
+                var user = await _profileService.GetProflieByEmailAsync();          
                 return Ok(user);
             }
             catch (IncorrectAuthParamsException e)
