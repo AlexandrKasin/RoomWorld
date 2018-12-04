@@ -1,24 +1,34 @@
 ﻿using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+using Data;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Service.SignalR
 {
-    [Authorize]
     public class ChatHub : Hub
     {
-        public ChatHub()
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public ChatHub(IHttpContextAccessor httpContextAccessor)
         {
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task Send(string text, string username)
         {
             await Clients.All.SendAsync("Send", text, username);
         }
-       
+
         public override async Task OnConnectedAsync()
         {
+            /*var role = _httpContextAccessor.HttpContext.User.FindFirst(ClaimsIdentity.DefaultRoleClaimType)?.Value;
+            if (role == RoleEnum.Consultant.ToString())
+            {
+            
+            }*/
+           
             await Groups.AddToGroupAsync(Context.ConnectionId, "SignalR Users");
             await base.OnConnectedAsync();
         }

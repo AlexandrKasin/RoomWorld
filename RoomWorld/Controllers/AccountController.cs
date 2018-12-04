@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Data.Entity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Service;
-using Service.dto;
 using Service.DTO;
 using Service.Exceptions;
 using Service.Services;

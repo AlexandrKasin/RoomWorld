@@ -16,6 +16,8 @@ namespace Repository.Models
         public DbSet<HouseRules> HouseRulese { get; set; }
         public DbSet<Image> Image { get; set; }
         public DbSet<Order> Order { get; set; }
+        public DbSet<Role> Role { get; set; }
+        public DbSet<UserRoles> UserRoles { get; set; }
 
 
         public DatabaseContext(DbContextOptions options) : base(options)

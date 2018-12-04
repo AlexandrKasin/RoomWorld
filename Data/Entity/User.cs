@@ -14,9 +14,6 @@ namespace Data.Entity
         public string Surname { get; set; }
 
         [Required]
-        public Role Role { get; set; }
-
-        [Required]
         [EmailAddress]
         [MaxLength(100)]
         public string Email { get; set; }
@@ -32,5 +29,7 @@ namespace Data.Entity
         public ICollection<Flat> Flats { get; set; }
 
         public ICollection<Order> Orders { get; set; }
+
+        public ICollection<UserRoles> UserRoles { get; set; }
     }
 }
