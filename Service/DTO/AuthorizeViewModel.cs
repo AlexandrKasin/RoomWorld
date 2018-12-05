@@ -2,7 +2,7 @@
 
 namespace Service
 {
-    public class Authorize
+    public class AuthorizeViewModel
     {
         [Required]
         public string Email { get; set; }

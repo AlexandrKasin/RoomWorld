@@ -29,7 +29,7 @@ namespace RoomWorld.Controllers
         }
 
         [HttpPost("/registration")]
-        public async Task<IActionResult> Registration(User user)
+        public async Task<IActionResult> Registration(UserRegistrationParamsViewModel user)
         {
             try
             {
@@ -70,7 +70,7 @@ namespace RoomWorld.Controllers
 
 
         [HttpPost("/token")]
-        public async Task<IActionResult> Token(Authorize authorize)
+        public async Task<IActionResult> Token(AuthorizeViewModel authorize)
         {
             try
             { 

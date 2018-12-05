@@ -20,20 +20,18 @@ namespace Service.Services
     public class ProfileService : IProfileService
     {
         private readonly IMapper _mapper;
-        private readonly IRepository<Flat> _flatRepository;
         private readonly IRepository<User> _userRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IConfiguration _configuration;
         private readonly IEmailService _emailService;
         private readonly IHashMd5Service _hashMd5Service;
 
-        public ProfileService(IMapper mapper, IRepository<User> userRepository, IRepository<Flat> flatRepository,
+        public ProfileService(IMapper mapper, IRepository<User> userRepository,
             IHttpContextAccessor httpContextAccessor, IConfiguration configuration, IEmailService emailService,
             IHashMd5Service hashMd5Service)
         {
             _mapper = mapper;
             _userRepository = userRepository;
-            _flatRepository = flatRepository;
             _httpContextAccessor = httpContextAccessor;
             _configuration = configuration;
             _emailService = emailService;
@@ -49,6 +47,7 @@ namespace Service.Services
             {
                 throw new IncorrectAuthParamsException("Email does not exist.");
             }
+
             return _mapper.Map<ProfileViewModel>(user);
         }
 
@@ -75,7 +74,7 @@ namespace Service.Services
             var tokenToEncrypt = email + "|" + DateTime.Now.AddMinutes(10);
             var encryptedText = Encrypting.Encrypt(tokenToEncrypt, _configuration["EncryptionKey"], true);
             encryptedText = HttpUtility.UrlEncode(encryptedText);
-            
+
             var resetPasswordView = File.ReadAllText(@"..\Service\Templates\View\ResetPassword.html");
             await _emailService.SendEmailAsync(email, "Password reset", resetPasswordView);
         }

@@ -42,11 +42,11 @@ namespace Service.Services
             return claimsIdentity;
         }
 
-        public async Task<Token> GetTokenAsync(Authorize authorize)
+        public async Task<Token> GetTokenAsync(AuthorizeViewModel authorize)
         {
             authorize.Password = _hashMd5Service.GetMd5Hash(authorize.Password);
             var user = await (await _repository.GetAllAsync(t =>
-                t.Email == authorize.Email && t.Password == authorize.Password)).FirstOrDefaultAsync();
+                t.Email == authorize.Email && t.Password == authorize.Password)).Include("UserRoles.Role").FirstOrDefaultAsync();
 
             var identity = GetIdentity(user);
             if (identity == null)

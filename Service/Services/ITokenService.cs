@@ -4,6 +4,6 @@ namespace Service.Services
 {
     public interface ITokenService
     {
-        Task<Token> GetTokenAsync(Authorize authorize);
+        Task<Token> GetTokenAsync(AuthorizeViewModel authorize);
     }
 }

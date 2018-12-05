@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Data.Entity
+namespace Service.DTO
 {
-    public class User : BaseEntity
+    public class UserRegistrationParamsViewModel
     {
         [Required]
         [MaxLength(100)]
@@ -29,11 +28,5 @@ namespace Data.Entity
         [Required]
         [MaxLength(20)]
         public string PhoneNumber { get; set; }
-
-        public ICollection<Flat> Flats { get; set; }
-
-        public ICollection<Order> Orders { get; set; }
-
-        public ICollection<UserRoles> UserRoles { get; set; }
     }
 }
