@@ -28,7 +28,13 @@ namespace Service.Services
             return await _repository.GetByIdAsync(id);
         }
 
-        public async Task<IList> GetAllAsync(Expression<Func<User, bool>> predicate = null, params Expression<Func<User, object>>[] includeParams)
+        public async Task<User> GetUserByEmailAsync(string email)
+        {
+            return await (await _repository.GetAllAsync(u => u.Email == email)).FirstOrDefaultAsync();
+        }
+
+        public async Task<IList> GetAllAsync(Expression<Func<User, bool>> predicate = null,
+            params Expression<Func<User, object>>[] includeParams)
         {
             return await (await _repository.GetAllAsync(predicate, includeParams)).ToListAsync();
         }
@@ -42,6 +48,6 @@ namespace Service.Services
         public async Task DeleteUserAsync(User user)
         {
             await _repository.DeleteAsync(user);
-        } 
+        }
     }
 }

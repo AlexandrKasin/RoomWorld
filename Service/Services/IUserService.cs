@@ -10,6 +10,7 @@ namespace Service.Services
     {
         Task AddUserAsync(User user);
         Task<User> GetUserByIdAsync(int id);
+        Task<User> GetUserByEmailAsync(string email);
         Task<IList> GetAllAsync(Expression<Func<User, bool>> predicate, params Expression<Func<User, object>>[] includeParams);
         Task UpdateUserAsync(User user);
         Task DeleteUserAsync(User user);
