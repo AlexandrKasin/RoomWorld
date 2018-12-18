@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Service.DTO;
 
 namespace Service.Services
 {

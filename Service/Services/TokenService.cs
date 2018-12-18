@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Repository.Repositories;
+using Service.DTO;
 using Service.Exceptions;
 
 namespace Service.Services

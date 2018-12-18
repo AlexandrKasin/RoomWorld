@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Service
+namespace Service.DTO
 {
     public class AuthorizeViewModel
     {

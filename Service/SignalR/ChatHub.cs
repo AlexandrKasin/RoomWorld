@@ -16,7 +16,6 @@ namespace Service.SignalR
         private readonly IUserService _userService;
 
         private static readonly ICollection<ConsultantViewModel> Consultants = new List<ConsultantViewModel>();
-        private static readonly ICollection<string> FreeClients = new List<string>();
 
         public ChatHub(IHttpContextAccessor httpContextAccessor, IUserService userService)
         {
@@ -31,7 +30,12 @@ namespace Service.SignalR
 
         public async Task SendById(string id, string text, string username)
         {
-            await Clients.Client(id).SendAsync("Send", text, username);
+            await Clients.Client(id).SendAsync("SendByID", text, username);
+        }
+
+        public async Task SendToConsultants(string text, string username)
+        {
+            await Clients.Group("consultants").SendAsync("SendToConsultants", text, username);
         }
 
         public override async Task OnConnectedAsync()
@@ -39,7 +43,7 @@ namespace Service.SignalR
             var role = _httpContextAccessor.HttpContext.User.FindFirst(ClaimsIdentity.DefaultRoleClaimType)?.Value;
             var email = _httpContextAccessor.HttpContext.User.FindFirst(ClaimsIdentity.DefaultNameClaimType)?.Value;
 
-            if (role == "Consultant")
+            if (role != null && string.Equals(role, "consultant", StringComparison.CurrentCultureIgnoreCase))
             {
                 var user = await _userService.GetUserByEmailAsync(email);
                 var consultant = new ConsultantViewModel
@@ -47,41 +51,26 @@ namespace Service.SignalR
                     IdSignalR = Context.ConnectionId,
                     Email = email,
                     Name = user.Name,
-                    UsersInChat = new List<string>(FreeClients)
                 };
-                FreeClients.Clear();
                 if (!Consultants.Any())
                 {
-                    await Clients.All.SendAsync("SwichConsultant", Context.ConnectionId, user.Name, email);
+                    await Clients.All.SendAsync("SwichConsultant", true);
                 }
-
                 Consultants.Add(consultant);
+                await Groups.AddToGroupAsync(Context.ConnectionId, "consultants");
             }
             else
             {
                 if (Consultants.Any())
                 {
-                    var freeConsultant = Consultants.FirstOrDefault();
-                    foreach (var conultant in Consultants)
-                    {
-                        if (freeConsultant != null && freeConsultant.UsersInChat?.Count > conultant.UsersInChat?.Count)
-                        {
-                            freeConsultant = conultant;
-                        }
-                    }
-
-                    freeConsultant?.UsersInChat?.Add(Context.ConnectionId);
-                    await Clients.Client(Context.ConnectionId).SendAsync("SwichConsultant", freeConsultant?.IdSignalR,
-                        freeConsultant?.Name, freeConsultant?.Email);
+                    await Clients.Client(Context.ConnectionId).SendAsync("SwichConsultant", true);
                 }
                 else
                 {
-                    FreeClients.Add(Context.ConnectionId);
-                    await Clients.Client(Context.ConnectionId).SendAsync("SwichConsultant", null, null, null);
+                    await Clients.Client(Context.ConnectionId).SendAsync("SwichConsultant", false);
                 }
+                await Groups.AddToGroupAsync(Context.ConnectionId, "clients");
             }
-
-            await Groups.AddToGroupAsync(Context.ConnectionId, "SignalR Users");
             await base.OnConnectedAsync();
         }
 
@@ -90,45 +79,16 @@ namespace Service.SignalR
         {
             var role = _httpContextAccessor.HttpContext.User.FindFirst(ClaimsIdentity.DefaultRoleClaimType)?.Value;
             var email = _httpContextAccessor.HttpContext.User.FindFirst(ClaimsIdentity.DefaultNameClaimType)?.Value;
-            if (role == "Consultant")
+            if (role != null && string.Equals(role, "consultant", StringComparison.CurrentCultureIgnoreCase))
             {
-                var user = await _userService.GetUserByEmailAsync(email);
-                var oflineConsultant = Consultants.SingleOrDefault(x => x.Email == user.Email);
-                Consultants.Remove(oflineConsultant);
-                if (Consultants.Any())
+                Consultants.Remove(Consultants.SingleOrDefault(x => x.Email == email));
+                if (!Consultants.Any())
                 {
-                    var freeConsultant = Consultants.FirstOrDefault();
-                    foreach (var conultant in Consultants)
-                    {
-                        if (freeConsultant != null && freeConsultant.UsersInChat?.Count > conultant.UsersInChat?.Count)
-                        {
-                            freeConsultant = conultant;
-                        }
-                    }
-
-
-                    if (oflineConsultant != null && oflineConsultant.UsersInChat.Any())
-                    {
-                        foreach (var userInChat in oflineConsultant.UsersInChat)
-                        {
-                            await Clients.Client(userInChat).SendAsync("SwichConsultant", freeConsultant?.IdSignalR,
-                                freeConsultant?.Name, freeConsultant?.Email);
-                        }
-                    }
-                }
-                else
-                {
-                    if (oflineConsultant != null && oflineConsultant.UsersInChat.Any())
-                    {
-                        foreach (var userInChat in oflineConsultant.UsersInChat)
-                        {
-                            await Clients.Client(userInChat).SendAsync("SwichConsultant", null, null, null);
-                        }
-                    }
-                }
+                    await Clients.All.SendAsync("SwichConsultant", false);
+                } 
             }
 
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, "SignalR Users");
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, "clients");
             await base.OnDisconnectedAsync(exception);
         }
     }
