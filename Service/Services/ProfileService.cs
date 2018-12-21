@@ -75,8 +75,8 @@ namespace Service.Services
             var encryptedText = Encrypting.Encrypt(tokenToEncrypt, _configuration["EncryptionKey"], true);
             encryptedText = HttpUtility.UrlEncode(encryptedText);
 
-            var resetPasswordView = File.ReadAllText(@"..\Service\Templates\View\ResetPassword.html");
-            await _emailService.SendEmailAsync(email, "Password reset", resetPasswordView);
+            /*var resetPasswordView = File.ReadAllText(@"..\Service\Templates\View\ResetPassword.html");*/
+            await _emailService.SendEmailAsync(email, "Password reset", $"<a href=http://localhost:3000/change/password/{encryptedText}>Reset password</a>");
         }
 
         public async Task ResetPasswordByTokenAsync(ResetPasswordViewModel model)

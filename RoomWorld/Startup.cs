@@ -81,6 +81,7 @@ namespace RoomWorld
             services.AddScoped<IProfileService, ProfileService>();
             services.AddScoped<IUploadImagesService, UploadImagesService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IMessageService, MessageService>();
 
 
             services.AddCors(o => o.AddPolicy("Allow-Origin", builder =>

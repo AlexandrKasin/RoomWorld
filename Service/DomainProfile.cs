@@ -19,6 +19,7 @@ namespace Service
             CreateMap<OrderedFlatViewModel, Order>();
             CreateMap<User, ProfileViewModel>();
             CreateMap<UserRegistrationParamsViewModel, User>();
+            CreateMap<Message, MessageViewModel>();
         }
     }
 }

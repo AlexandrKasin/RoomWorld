@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Data.Entity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Service.DTO;
@@ -14,13 +15,15 @@ namespace Service.SignalR
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUserService _userService;
+        private readonly IMessageService _messageService;
 
-        private static readonly ICollection<ConsultantViewModel> Consultants = new List<ConsultantViewModel>();
+        private static readonly IList<ConsultantViewModel> Consultants = new List<ConsultantViewModel>();
 
-        public ChatHub(IHttpContextAccessor httpContextAccessor, IUserService userService)
+        public ChatHub(IHttpContextAccessor httpContextAccessor, IUserService userService, IMessageService messageService)
         {
             _httpContextAccessor = httpContextAccessor;
             _userService = userService;
+            _messageService = messageService;
         }
 
         public async Task Send(string text, string username)
@@ -35,7 +38,10 @@ namespace Service.SignalR
 
         public async Task SendToConsultants(string text, string username)
         {
+            var email = _httpContextAccessor.HttpContext.User.FindFirst(ClaimsIdentity.DefaultNameClaimType)?.Value;
             await Clients.Group("consultants").SendAsync("SendToConsultants", text, username);
+            var user = await _userService.GetUserByEmailAsync(email);
+            await _messageService.AddMessageAsync(new Message {UserFrom = user, Text = text, UsernameTo = "consult"});   
         }
 
         public override async Task OnConnectedAsync()

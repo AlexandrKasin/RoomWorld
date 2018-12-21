@@ -35,5 +35,9 @@ namespace Data.Entity
         public ICollection<Order> Orders { get; set; }
 
         public ICollection<UserRoles> UserRoles { get; set; }
+
+        public ICollection<Message> Messages { get; set; }
+
+        public ICollection<Dialog> Dialogs { get; set; }
     }
 }

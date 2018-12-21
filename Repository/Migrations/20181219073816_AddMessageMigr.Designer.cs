@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository.Models;
 
 namespace Repository.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20181219073816_AddMessageMigr")]
+    partial class AddMessageMigr
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,33 +54,6 @@ namespace Repository.Migrations
                     b.HasIndex("FlatId");
 
                     b.ToTable("Amentiese");
-                });
-
-            modelBuilder.Entity("Data.Entity.Dialog", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<long?>("ClientId");
-
-                    b.Property<long>("CreatedBy");
-
-                    b.Property<DateTime>("CreatedDate");
-
-                    b.Property<long?>("ModifiedBy");
-
-                    b.Property<DateTime?>("ModifiedDate");
-
-                    b.Property<byte[]>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClientId");
-
-                    b.ToTable("Dialogs");
                 });
 
             modelBuilder.Entity("Data.Entity.Flat", b =>
@@ -251,8 +226,6 @@ namespace Repository.Migrations
 
                     b.Property<DateTime>("CreatedDate");
 
-                    b.Property<long?>("DialogId");
-
                     b.Property<long?>("ModifiedBy");
 
                     b.Property<DateTime?>("ModifiedDate");
@@ -269,11 +242,9 @@ namespace Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DialogId");
-
                     b.HasIndex("UserFromId");
 
-                    b.ToTable("Messages");
+                    b.ToTable("Message");
                 });
 
             modelBuilder.Entity("Data.Entity.Order", b =>
@@ -428,13 +399,6 @@ namespace Repository.Migrations
                         .HasForeignKey("FlatId");
                 });
 
-            modelBuilder.Entity("Data.Entity.Dialog", b =>
-                {
-                    b.HasOne("Data.Entity.User", "Client")
-                        .WithMany("Dialogs")
-                        .HasForeignKey("ClientId");
-                });
-
             modelBuilder.Entity("Data.Entity.Flat", b =>
                 {
                     b.HasOne("Data.Entity.Location", "Location")
@@ -462,10 +426,6 @@ namespace Repository.Migrations
 
             modelBuilder.Entity("Data.Entity.Message", b =>
                 {
-                    b.HasOne("Data.Entity.Dialog", "Dialog")
-                        .WithMany("Messages")
-                        .HasForeignKey("DialogId");
-
                     b.HasOne("Data.Entity.User", "UserFrom")
                         .WithMany("Messages")
                         .HasForeignKey("UserFromId");

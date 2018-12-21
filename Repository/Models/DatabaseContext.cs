@@ -18,7 +18,8 @@ namespace Repository.Models
         public DbSet<Order> Order { get; set; }
         public DbSet<Role> Role { get; set; }
         public DbSet<UserRoles> UserRoles { get; set; }
-
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<Dialog> Dialogs { get; set; }
 
         public DatabaseContext(DbContextOptions options) : base(options)
         {
