@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data.Entity;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Repository.Repositories;
 using Service.DTO;
@@ -14,13 +16,15 @@ namespace Service.Services
         private readonly IRepository<Message> _messageRepository;
         private readonly IRepository<Dialog> _dialogRepository;
         private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public MessageService(IRepository<Message> messageRepository, IRepository<Dialog> dialogRepository,
-            IMapper mapper)
+            IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _messageRepository = messageRepository;
             _dialogRepository = dialogRepository;
             _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task AddMessageAsync(Message message)
@@ -57,6 +61,14 @@ namespace Service.Services
             }
 
             return _mapper.Map<IList<MessageViewModel>>(listMessages);
+        }
+        public async Task<IList<MessageViewModel>> GetMessagesByEmailAsync(string email)
+        {          
+            var dialogs = (await _dialogRepository.GetAllAsync(x => x.Client.Email == email))
+                .Include(x => x.Messages)
+                .ThenInclude(x => x.UserFrom).FirstOrDefault();
+         
+            return _mapper.Map<IList<MessageViewModel>>(dialogs?.Messages);
         }
     }
 }

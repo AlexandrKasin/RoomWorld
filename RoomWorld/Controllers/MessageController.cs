@@ -23,13 +23,31 @@ namespace RoomWorld.Controllers
         }
 
         [HttpGet("/get/dialogs/all")]
-       
         public async Task<IActionResult> GetAllDialogs()
         {
             try
             {
                 var dialogs = await _messageService.GetAllDialogsAsync();
                 return Ok(dialogs);
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+        }
+
+        [HttpGet("/get/messages")]
+        [Authorize]
+        public async Task<IActionResult> GetMessages(string email)
+        {
+            try
+            {
+                var messages = await _messageService.GetMessagesByEmailAsync(email);
+                return Ok(messages);
             }
             catch (DbUpdateConcurrencyException e)
             {

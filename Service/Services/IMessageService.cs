@@ -11,5 +11,6 @@ namespace Service.Services
     {
         Task AddMessageAsync(Message message);
         Task<IList<MessageViewModel>> GetAllDialogsAsync();
+        Task<IList<MessageViewModel>> GetMessagesByEmailAsync(string email);
     }
 }
