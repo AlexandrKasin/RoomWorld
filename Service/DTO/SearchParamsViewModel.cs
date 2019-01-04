@@ -2,7 +2,7 @@
 
 namespace Service
 {
-    public class SearchParams
+    public class SearchParamsViewModel
     {
         public string Country { get; set; }
 

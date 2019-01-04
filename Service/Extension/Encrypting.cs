@@ -46,7 +46,7 @@ namespace Service.Extension
             }
             catch (Exception)
             {
-                throw new InvalidTokenException();
+                throw new InvalidDataException();
             }
 
             if (useHashing)
@@ -75,7 +75,7 @@ namespace Service.Extension
             }
             catch (Exception)
             {
-                throw new InvalidTokenException();
+                throw new InvalidDataException();
             }
 
             tdes.Clear();

@@ -20,7 +20,7 @@ namespace Service.Services
         {
             if (!new EmailAddressAttribute().IsValid(email))
             {
-                throw new InvalidEmailException("Incorrect email address");
+                throw new InvalidDataException("Incorrect email address");
             }
 
             var emailMessage = new MimeMessage();

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Service.dto;
+﻿using Service.dto;
 
 namespace Service.DTO
 {

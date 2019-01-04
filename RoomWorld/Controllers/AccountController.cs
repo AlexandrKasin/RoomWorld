@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Data.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,15 +16,13 @@ namespace RoomWorld.Controllers
         private readonly ITokenService _tokenService;
         private readonly IRegistrationService _registrationService;
         private readonly IProfileService _profileService;
-        private readonly IEmailService _emailService;
 
         public AccountController(ITokenService tokenService, IRegistrationService registrationService,
-            IProfileService profileService, IEmailService emailService)
+            IProfileService profileService)
         {
             _tokenService = tokenService;
             _registrationService = registrationService;
             _profileService = profileService;
-            _emailService = emailService;
         }
 
         [HttpPost("/registration")]
@@ -36,7 +33,7 @@ namespace RoomWorld.Controllers
                 var responce = await _registrationService.RegisterUserAsync(user);
                 return Ok(responce);
             }
-            catch (EmailAlredyExistsException e)
+            catch (EntityAlredyExistsException e)
             {
                 return StatusCode(401, e.Message);
             }
@@ -54,7 +51,7 @@ namespace RoomWorld.Controllers
                 await _profileService.ChangeProfileAsync(user);
                 return Ok();
             }
-            catch (IncorrectAuthParamsException e)
+            catch (IncorrectParamsException e)
             {
                 return BadRequest(e.Message);
             }
@@ -73,17 +70,21 @@ namespace RoomWorld.Controllers
         public async Task<IActionResult> Token(AuthorizeViewModel authorize)
         {
             try
-            { 
-                var response =  await _tokenService.GetTokenAsync(authorize);
+            {
+                var response = await _tokenService.GetTokenAsync(authorize);
                 return Ok(response);
             }
-            catch (IncorrectAuthParamsException e)
+            catch (EntityNotExistException e)
+            {
+                return StatusCode(401, e.Message);
+            }
+            catch (IncorrectParamsException e)
             {
                 return StatusCode(401, e.Message);
             }
             catch (DbUpdateConcurrencyException e)
             {
-                return BadRequest(e.Message);
+                return StatusCode(403, e.Message);
             }
             catch (Exception e)
             {
@@ -100,7 +101,7 @@ namespace RoomWorld.Controllers
                 var user = await _profileService.GetProflieByEmailAsync();          
                 return Ok(user);
             }
-            catch (IncorrectAuthParamsException e)
+            catch (IncorrectParamsException e)
             {
                 return BadRequest(e.Message);
             }
@@ -116,14 +117,14 @@ namespace RoomWorld.Controllers
 
         [HttpPut("/user/change/password")]
         [Authorize]
-        public async Task<IActionResult> ChangePassword(ChangePasswordParams changePasswordParams)
+        public async Task<IActionResult> ChangePassword(ChangePasswordParamsViewModel changePasswordParams)
         {
             try
             {
                 await _registrationService.ChangePasswordAsync(changePasswordParams);
                 return Ok();
             }
-            catch (IncorrectAuthParamsException e)
+            catch (IncorrectParamsException e)
             {
                 return BadRequest(e.Message);
             }
@@ -149,7 +150,7 @@ namespace RoomWorld.Controllers
             {
                 return BadRequest(e.Message);
             }
-            catch (InvalidEmailException e)
+            catch (InvalidDataException e)
             {
                 return BadRequest(e.Message);
             }
@@ -167,7 +168,7 @@ namespace RoomWorld.Controllers
                 await _profileService.ResetPasswordByTokenAsync(resetPasswordViewModel);
                 return Ok();
             }
-            catch (InvalidTokenException e)
+            catch (InvalidDataException e)
             {
                 return BadRequest(e.Message);
             }

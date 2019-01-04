@@ -25,7 +25,7 @@ namespace Service.Services
             _userRepository = userRepository;
         }
 
-        public async Task<int> AmountFlatByParamsAsync(SearchParams searchParams)
+        public async Task<int> AmountFlatByParamsAsync(SearchParamsViewModel searchParams)
         {
             return (await _flatRepository.GetAllAsync(
                 x => String.Equals(x.Location.Country, searchParams.Country, StringComparison.CurrentCultureIgnoreCase)
@@ -80,7 +80,7 @@ namespace Service.Services
             await _flatRepository.DeleteAsync(flat);
         }
 
-        public async Task<IList<FlatViewModel>> SearchFlatAsync(SearchParams searchParams)
+        public async Task<IList<FlatViewModel>> SearchFlatAsync(SearchParamsViewModel searchParams)
         {
             var flats = (await _flatRepository.GetAllAsync(
                     x => String.Equals(x.Location.Country, searchParams.Country, StringComparison.CurrentCultureIgnoreCase)

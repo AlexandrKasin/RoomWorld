@@ -32,30 +32,30 @@ namespace Service.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task AddOrderAsync(OrderParams orderParams)
+        public async Task AddOrderAsync(OrderParamsViewModel orderParamsViewModel)
         {
             var email = _httpContextAccessor.HttpContext.User.FindFirst(ClaimsIdentity.DefaultNameClaimType).Value;
 
             var user = (await _userRepository.GetAllAsync(x => x.Email == email)).FirstOrDefault();
             if (user == null)
             {
-                throw new IncorrectAuthParamsException("User does not exist.");
+                throw new IncorrectParamsException("User does not exist.");
             }
 
-            var flat = await (await _flatRepository.GetAllAsync(x => x.Id == orderParams.IdFlat))
+            var flat = await (await _flatRepository.GetAllAsync(x => x.Id == orderParamsViewModel.IdFlat))
                 .FirstOrDefaultAsync();
 
             if (flat == null)
             {
-                throw new FlatNotFoundException("Flat not found.");
+                throw new EntityNotExistException("Flat not found.");
             }
 
             var order = new Order
             {
-                DateFrom = orderParams.DateFrom,
-                DateTo = orderParams.DateTo,
+                DateFrom = orderParamsViewModel.DateFrom,
+                DateTo = orderParamsViewModel.DateTo,
                 Flat = flat,
-                Price = orderParams.Price,
+                Price = orderParamsViewModel.Price,
                 User = user,
                 CreatedBy = user.Id
             };

@@ -17,7 +17,7 @@ namespace Service.Services
 
         Task UpdateFlatAsync(Flat flat);
         Task DeleteFlatAsync(Flat flat);
-        Task<IList<FlatViewModel>> SearchFlatAsync(SearchParams searchParams);
-        Task<int> AmountFlatByParamsAsync(SearchParams searchParams);
+        Task<IList<FlatViewModel>> SearchFlatAsync(SearchParamsViewModel searchParams);
+        Task<int> AmountFlatByParamsAsync(SearchParamsViewModel searchParams);
     }
 }

@@ -1,16 +1,13 @@
 ﻿using System;
-using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using AutoMapper;
 using Data.Entity;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Repository.Repositories;
-using Service.dto;
 using Service.DTO;
 using Service.Exceptions;
 using Service.Extension;
@@ -45,7 +42,7 @@ namespace Service.Services
                 .FirstOrDefaultAsync();
             if (user == null)
             {
-                throw new IncorrectAuthParamsException("Email does not exist.");
+                throw new IncorrectParamsException("Email does not exist.");
             }
 
             return _mapper.Map<ProfileViewModel>(user);
@@ -57,7 +54,7 @@ namespace Service.Services
                 await (await _userRepository.GetAllAsync(x => x.Email == user.Email)).FirstOrDefaultAsync();
             if (currentUser == null)
             {
-                throw new IncorrectAuthParamsException("User does not exist.");
+                throw new IncorrectParamsException("User does not exist.");
             }
 
             currentUser.Name = user.Name;
@@ -68,7 +65,7 @@ namespace Service.Services
 
         public async Task SendMessageResetPasswordAsync(string email)
         {
-            var isExsist = await (await _userRepository.GetAllAsync(user => user.Email == email)).AnyAsync();
+            var isExsist = await (await _userRepository.GetAllAsync()).AnyAsync(user => user.Email.Equals(email,StringComparison.OrdinalIgnoreCase));
             if (!isExsist)
                 throw new EntityNotExistException("This email is not exist");
             var tokenToEncrypt = email + "|" + DateTime.Now.AddMinutes(10);
@@ -85,12 +82,12 @@ namespace Service.Services
                 Encrypting.Decrypt(HttpUtility.UrlDecode(model.Token), _configuration["EncryptionKey"], true));
             var tokenParts = decryptedToken.Split("|");
             if (tokenParts.Length < 2)
-                throw new InvalidTokenException("Token is not valid");
+                throw new InvalidDataException("TokenViewModel is not valid");
             var email = tokenParts[0];
             var expireTime = tokenParts[1];
 
-            if (DateTime.Compare(DateTime.Now, DateTime.Parse(expireTime)) == 1)
-                throw new TokenExpiredException("Token is expired");
+            if (DateTime.Compare(DateTime.UtcNow, DateTime.Parse(expireTime)) == 1)
+                throw new TokenExpiredException("TokenViewModel is expired");
 
             var user = await (await _userRepository.GetAllAsync(u => u.Email == email)).FirstOrDefaultAsync();
             if (user == null)

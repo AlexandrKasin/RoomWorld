@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -61,14 +60,14 @@ namespace RoomWorld.Controllers
 
         [HttpPost("/add/order")]
         [Authorize]
-        public async Task<IActionResult> OrderFlat(OrderParams orderParams)
+        public async Task<IActionResult> OrderFlat(OrderParamsViewModel orderParamsViewModel)
         {
             try
             {
-                await _orderService.AddOrderAsync(orderParams);
+                await _orderService.AddOrderAsync(orderParamsViewModel);
                 return Ok();
             }
-            catch (FlatNotFoundException e)
+            catch (EntityNotExistException e)
             {
                 return BadRequest(e.Message);
             }

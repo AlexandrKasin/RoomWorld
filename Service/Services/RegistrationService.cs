@@ -37,18 +37,18 @@ namespace Service.Services
             _mapper = mapper;
         }
 
-        public async Task<Token> RegisterUserAsync(UserRegistrationParamsViewModel userParams)
+        public async Task<TokenViewModel> RegisterUserAsync(UserRegistrationParamsViewModel userParams)
         {
             var user = _mapper.Map<User>(userParams);
             var existsEmail = await (await _repositoryUser.GetAllAsync(t => t.Email == user.Email)).AnyAsync();
             if (existsEmail)
             {
-                throw new EmailAlredyExistsException("This email already exists.");
+                throw new EntityAlredyExistsException("This email already exists.");
             }
             var existsUsername = await (await _repositoryUser.GetAllAsync(t => t.Username == user.Username)).AnyAsync();
             if (existsUsername)
             {
-                throw new UsernameAlreadyExistsException("This username already exists.");
+                throw new EntityAlredyExistsException("This username already exists.");
             }
 
             var role = await (await _repositoryRole.GetAllAsync(r =>
@@ -62,7 +62,7 @@ namespace Service.Services
                 await (await _repositoryUser.GetAllAsync(t => t.Email == _configuration["EmailSystemUser"])).FirstOrDefaultAsync();
             if (systemUser == null)
             {
-                throw new UserNotExistsException("System user with email: " + _configuration["EmailSystemUser"] + "not exist");
+                throw new EntityNotExistException("System user with email: " + _configuration["EmailSystemUser"] + "not exist");
             }
             user.CreatedBy = systemUser.Id;
             user.Password = _hashMd5Service.GetMd5Hash(user.Password);
@@ -72,19 +72,16 @@ namespace Service.Services
             return token;
         }
 
-        public async Task ChangePasswordAsync(ChangePasswordParams changePasswordParams)
+        public async Task ChangePasswordAsync(ChangePasswordParamsViewModel changePasswordParams)
         {
             var email = _httpContextAccessor.HttpContext.User.FindFirst(ClaimsIdentity.DefaultNameClaimType).Value;
-
             var user = await (await _repositoryUser.GetAllAsync(x =>
                     x.Email == email && x.Password == _hashMd5Service.GetMd5Hash(changePasswordParams.CurrentPassword)))
                 .FirstOrDefaultAsync();
-
             if (user == null)
             {
-                throw new IncorrectAuthParamsException("Incorrect email or password");
+                throw new IncorrectParamsException("Incorrect current password.");
             }
-
             user.Password = _hashMd5Service.GetMd5Hash(changePasswordParams.NewPassword);
             await _repositoryUser.UpdateAsync(user);
         }

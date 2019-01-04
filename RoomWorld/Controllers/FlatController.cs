@@ -49,7 +49,7 @@ namespace RoomWorld.Controllers
             {
                 return Ok(await _flatService.GetFlatByIdAsync(id));
             }
-            catch (FlatNotFoundException e)
+            catch (EntityNotExistException e)
             {
                 return BadRequest(e.Message);
             }
@@ -65,7 +65,7 @@ namespace RoomWorld.Controllers
 
         [HttpGet("/places/amount")]
         [Authorize]
-        public async Task<IActionResult> AmountFlatByLoation([FromHeader] SearchParams searchParams)
+        public async Task<IActionResult> AmountFlatByLoation([FromHeader] SearchParamsViewModel searchParams)
         {
             try
             {
@@ -84,7 +84,7 @@ namespace RoomWorld.Controllers
 
         [HttpGet("/search")]
         [Authorize]
-        public async Task<IActionResult> SearchFlats([FromHeader] SearchParams searchParams)
+        public async Task<IActionResult> SearchFlats([FromHeader] SearchParamsViewModel searchParams)
         {
             try
             {

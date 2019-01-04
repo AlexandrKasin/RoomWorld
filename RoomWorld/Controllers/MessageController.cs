@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Data.Entity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Service.Services;
@@ -23,6 +19,7 @@ namespace RoomWorld.Controllers
         }
 
         [HttpGet("/get/dialogs/all")]
+        [Authorize]
         public async Task<IActionResult> GetAllDialogs()
         {
             try

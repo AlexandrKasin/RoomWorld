@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data.Entity;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Repository.Repositories;
 using Service.DTO;
@@ -13,18 +11,14 @@ namespace Service.Services
 {
     public class MessageService : IMessageService
     {
-        private readonly IRepository<Message> _messageRepository;
         private readonly IRepository<Dialog> _dialogRepository;
         private readonly IMapper _mapper;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public MessageService(IRepository<Message> messageRepository, IRepository<Dialog> dialogRepository,
-            IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public MessageService(IRepository<Dialog> dialogRepository,
+            IMapper mapper)
         {
-            _messageRepository = messageRepository;
             _dialogRepository = dialogRepository;
             _mapper = mapper;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task AddMessageAsync(Message message)

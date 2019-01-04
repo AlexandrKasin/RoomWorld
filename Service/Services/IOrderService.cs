@@ -9,7 +9,7 @@ namespace Service.Services
 {
     public interface IOrderService
     {
-        Task AddOrderAsync(OrderParams orderParams);
+        Task AddOrderAsync(OrderParamsViewModel orderParamsViewModel);
 
         Task<IList<Order>> GetAllAsync(Expression<Func<Order, bool>> predicate = null,
             params Expression<Func<Order, object>>[] includeParams);

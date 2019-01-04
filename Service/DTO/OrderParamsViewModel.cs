@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Service
 {
-    public class OrderParams
+    public class OrderParamsViewModel
     {
         [Required]
         public DateTime DateFrom { get; set; }

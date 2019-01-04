@@ -38,21 +38,25 @@ namespace Service.Services
             };
             claims.AddRange(user.UserRoles.Select(role => new Claim(ClaimsIdentity.DefaultRoleClaimType, role.Role.Name)));
             var claimsIdentity =
-                new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
+                new ClaimsIdentity(claims, "TokenViewModel", ClaimsIdentity.DefaultNameClaimType,
                     ClaimsIdentity.DefaultRoleClaimType);
             return claimsIdentity;
         }
 
-        public async Task<Token> GetTokenAsync(AuthorizeViewModel authorize)
+        public async Task<TokenViewModel> GetTokenAsync(AuthorizeViewModel authorize)
         {
             authorize.Password = _hashMd5Service.GetMd5Hash(authorize.Password);
             var user = await (await _repository.GetAllAsync(t =>
-                t.Email == authorize.Email && t.Password == authorize.Password)).Include("UserRoles.Role").FirstOrDefaultAsync();
+                t.Email == authorize.Email)).Include("UserRoles.Role").FirstOrDefaultAsync();
+            if (user == null)
+            {
+                throw  new EntityNotExistException("Email address does not exist.");
+            }
 
             var identity = GetIdentity(user);
-            if (identity == null)
+            if (user.Password != authorize.Password || identity == null)
             {
-                throw new IncorrectAuthParamsException("Incorrect email or password");
+                throw new IncorrectParamsException("Incorrect email or password.");
             }
 
             var now = DateTime.UtcNow;
@@ -67,7 +71,7 @@ namespace Service.Services
                     SecurityAlgorithms.HmacSha256));
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-            var response = new Token
+            var response = new TokenViewModel
             {
                 AccessToken = encodedJwt,
                 Username = identity.Name

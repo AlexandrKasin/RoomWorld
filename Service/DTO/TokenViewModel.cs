@@ -1,6 +1,6 @@
 ﻿namespace Service
 {
-    public class Token
+    public class TokenViewModel
     {
         public string AccessToken { get; set; }
         public string Username { get; set; }
