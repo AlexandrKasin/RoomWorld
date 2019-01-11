@@ -64,5 +64,14 @@ namespace Service.Services
          
             return _mapper.Map<IList<MessageViewModel>>(dialogs?.Messages);
         }
+
+        public async Task<IList<MessageViewModel>> ChangeMessageAsync(string email)
+        {
+            var dialogs = (await _dialogRepository.GetAllAsync(x => x.Client.Email == email))
+                .Include(x => x.Messages)
+                .ThenInclude(x => x.UserFrom).FirstOrDefault();
+
+            return _mapper.Map<IList<MessageViewModel>>(dialogs?.Messages);
+        }
     }
 }

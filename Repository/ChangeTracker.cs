@@ -17,6 +17,7 @@ namespace Repository
                 switch (entry.State)
                 {
                     case EntityState.Modified:
+                        SetRowVersion(entry);
                         baseAudit.ModifiedDate = now;
                         break;
                     case EntityState.Added:
@@ -24,6 +25,11 @@ namespace Repository
                         break;
                 }
             }
+        }
+
+        private static void SetRowVersion(EntityEntry entry)
+        {
+            entry.OriginalValues[nameof(BaseEntity.Version)] = entry.CurrentValues[nameof(BaseEntity.Version)];
         }
     }
 }

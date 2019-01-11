@@ -60,7 +60,7 @@ namespace Service.SignalR
                 };
                 if (!Consultants.Any())
                 {
-                    await Clients.All.SendAsync("SwichConsultant", true);
+                    await Clients.All.SendAsync("stateConsultants", true);
                 }
                 Consultants.Add(consultant);
                 await Groups.AddToGroupAsync(Context.ConnectionId, "consultants");
@@ -69,11 +69,11 @@ namespace Service.SignalR
             {
                 if (Consultants.Any())
                 {
-                    await Clients.Client(Context.ConnectionId).SendAsync("SwichConsultant", true);
+                    await Clients.Client(Context.ConnectionId).SendAsync("stateConsultants", true);
                 }
                 else
                 {
-                    await Clients.Client(Context.ConnectionId).SendAsync("SwichConsultant", false);
+                    await Clients.Client(Context.ConnectionId).SendAsync("stateConsultants", false);
                 }
                 await Groups.AddToGroupAsync(Context.ConnectionId, "clients");
             }
@@ -90,7 +90,7 @@ namespace Service.SignalR
                 Consultants.Remove(Consultants.SingleOrDefault(x => x.Email == email));
                 if (!Consultants.Any())
                 {
-                    await Clients.All.SendAsync("SwichConsultant", false);
+                    await Clients.All.SendAsync("stateConsultants", false);
                 } 
             }
 

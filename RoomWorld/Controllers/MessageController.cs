@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +20,7 @@ namespace RoomWorld.Controllers
         }
 
         [HttpGet("/get/dialogs/all")]
-        [Authorize]
+        [Authorize(Roles = "Consultant")]
         public async Task<IActionResult> GetAllDialogs()
         {
             try
@@ -38,7 +39,7 @@ namespace RoomWorld.Controllers
         }
 
         [HttpGet("/get/messages")]
-        [Authorize]
+        [Authorize(Roles = "Consultant")]
         public async Task<IActionResult> GetMessages(string email)
         {
             try

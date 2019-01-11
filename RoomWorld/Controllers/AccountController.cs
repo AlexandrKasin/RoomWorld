@@ -185,5 +185,42 @@ namespace RoomWorld.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [HttpGet("/get/version")]
+        [Authorize]
+        public async Task<IActionResult> GetVersion()
+        {
+            try
+            {
+                var user = await _profileService.GetProflieByEmailAsync();
+                return Ok(user);
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+        }
+
+        [HttpPut("/test")]
+        public async Task<IActionResult> TestOptimisticLock(byte[] version)
+        {
+            try
+            {
+                await _profileService.ChangeProfileAsync(new ProfileViewModel{Email = "Al@gmail.com",Name = "asdasd",PhoneNumber = "283176511",Surname = "dfasdfsa",Version = version});
+                return Ok();
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+        }
     }
 }

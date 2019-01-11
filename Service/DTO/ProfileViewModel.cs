@@ -12,5 +12,6 @@ namespace Service.DTO
 
         public string PhoneNumber { get; set; }
         public IFormCollection Image { get; set; }
+        public byte[] Version { get; set; }
     }
 }

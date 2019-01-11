@@ -60,6 +60,7 @@ namespace Service.Services
             currentUser.Name = user.Name;
             currentUser.Surname = user.Surname;
             currentUser.PhoneNumber = user.PhoneNumber;
+            currentUser.Version = user.Version;/*!*/
             await _userRepository.UpdateAsync(currentUser);
         }
 
@@ -68,12 +69,11 @@ namespace Service.Services
             var isExsist = await (await _userRepository.GetAllAsync()).AnyAsync(user => user.Email.Equals(email,StringComparison.OrdinalIgnoreCase));
             if (!isExsist)
                 throw new EntityNotExistException("This email is not exist");
-            var tokenToEncrypt = email + "|" + DateTime.Now.AddMinutes(10);
+            var tokenToEncrypt = email + "|" + DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["TimeToResetPassword"]));
             var encryptedText = Encrypting.Encrypt(tokenToEncrypt, _configuration["EncryptionKey"], true);
             encryptedText = HttpUtility.UrlEncode(encryptedText);
-
             /*var resetPasswordView = File.ReadAllText(@"..\Service\Templates\View\ResetPassword.html");*/
-            await _emailService.SendEmailAsync(email, "Password reset", $"<a href=http://localhost:3000/change/password/{encryptedText}>Reset password</a>");
+            await _emailService.SendEmailAsync(email, "Password reset", $"<a href={_configuration["AuthOption:Issuer"]}/change/password/{encryptedText}>Reset password</a>");
         }
 
         public async Task ResetPasswordByTokenAsync(ResetPasswordViewModel model)
