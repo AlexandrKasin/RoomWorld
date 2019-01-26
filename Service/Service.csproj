@@ -28,4 +28,10 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DTO\ChatDTO\" />
+    <Folder Include="DTO\UserDTO\" />
+    <Folder Include="Extension\ApartmentExtention\" />
+  </ItemGroup>
+
 </Project>

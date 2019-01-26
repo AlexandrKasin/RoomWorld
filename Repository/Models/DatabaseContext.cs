@@ -10,16 +10,19 @@ namespace Repository.Models
     public sealed class DatabaseContext : DbContext
     {
         public DbSet<User> User { get; set; }
-        public DbSet<Amenties> Amentiese { get; set; }
-        public DbSet<Location> Location { get; set; }
-        public DbSet<Flat> Flat { get; set; }
-        public DbSet<HouseRules> HouseRulese { get; set; }
-        public DbSet<Image> Image { get; set; }
-        public DbSet<Order> Order { get; set; }
         public DbSet<Role> Role { get; set; }
         public DbSet<UserRoles> UserRoles { get; set; }
+
+        public DbSet<Amenities> Amenitiese { get; set; }
+        public DbSet<ApartmentLocation> ApartmentLocation { get; set; }
+        public DbSet<Apartment> Apartments { get; set; }
+        public DbSet<RulesOfResidence> RulesOfResidence { get; set; }
+        public DbSet<ApartmentReservation> ApartmentReservation { get; set; }
+        public DbSet<ApartmentImage> ApartmentImages { get; set; }
+
+        /*
         public DbSet<Message> Messages { get; set; }
-        public DbSet<Dialog> Dialogs { get; set; }
+        public DbSet<Dialog> Dialogs { get; set; }*/
 
         public DatabaseContext(DbContextOptions options) : base(options)
         {

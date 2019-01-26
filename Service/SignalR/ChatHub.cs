@@ -39,7 +39,7 @@ namespace Service.SignalR
         public async Task SendToConsultants(string text, string username)
         {
             var email = _httpContextAccessor.HttpContext.User.FindFirst(ClaimsIdentity.DefaultNameClaimType)?.Value;
-            await Clients.Group("consultants").SendAsync("SendToConsultants", text, username);
+            await Clients.Group("consultants").SendAsync("SendToConsultants", text, username, Context.ConnectionId);
             var user = await _userService.GetUserByEmailAsync(email);
             await _messageService.AddMessageAsync(new Message {UserFrom = user, Text = text, UsernameTo = "consult"});   
         }

@@ -6,15 +6,16 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Repository.Models;
 using Repository.Repositories;
-using Service;
 using Service.Services;
+using Service.Services.ApartmentServices;
+using Service.Services.ImageService;
+using Service.Services.UserServices;
 using Service.SignalR;
 
 namespace RoomWorld
@@ -76,7 +77,7 @@ namespace RoomWorld
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IRegistrationService, RegistrationService>();
             services.AddScoped<IHashMd5Service, HashMd5Service>();
-            services.AddScoped<IFlatService, FlatService>();
+            services.AddScoped<IApartmentService, ApartmentService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IProfileService, ProfileService>();
             services.AddScoped<IUploadImagesService, UploadImagesService>();

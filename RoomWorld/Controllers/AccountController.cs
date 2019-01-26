@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Service;
 using Service.DTO;
 using Service.Exceptions;
-using Service.Services;
+using Service.Services.UserServices;
 
 namespace RoomWorld.Controllers
 {
