@@ -1,11 +1,12 @@
 ﻿using System.Threading.Tasks;
 using Service.DTO;
+using Service.DTO.UserDTO;
 
 namespace Service.Services.UserServices
 {
     public interface IRegistrationService
     {
-        Task<TokenViewModel> RegisterUserAsync(UserRegistrationParamsViewModel user);
-        Task ChangePasswordAsync(ChangePasswordParamsViewModel changePasswordParams);
+        Task<TokenDTO> RegisterUserAsync(UserRegistrationDTO user);
+        Task ChangePasswordAsync(ChangePasswordParamsDTO changePasswordParams);
     }
 }

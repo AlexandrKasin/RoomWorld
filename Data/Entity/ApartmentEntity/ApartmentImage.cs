@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Data.Entity
+namespace Data.Entity.ApartmentEntity
 {
     public class ApartmentImage : BaseEntity
     {

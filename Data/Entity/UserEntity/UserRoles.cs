@@ -1,4 +1,4 @@
-﻿namespace Data.Entity
+﻿namespace Data.Entity.UserEntity
 {
     public class UserRoles : BaseEntity
     {

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Data.Entity.UserEntity;
 
-namespace Data.Entity
+namespace Data.Entity.ApartmentEntity
 {
     public class Apartment : BaseEntity
     {      
@@ -10,7 +11,7 @@ namespace Data.Entity
         [MaxLength(300)]
         public string HeadTitle { get; set; }
         [Required]
-        [MaxLength(1000)]
+        [MaxLength(10000)]
         public string PropertyDescription { get; set; }
         [Required]
         public int Accommodates { get; set; }

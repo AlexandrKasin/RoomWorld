@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Data.Entity;
+using Data.Entity.UserEntity;
 using Microsoft.EntityFrameworkCore;
 using Repository.Repositories;
 

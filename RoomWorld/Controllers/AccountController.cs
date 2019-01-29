@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Service;
 using Service.DTO;
+using Service.DTO.UserDTO;
 using Service.Exceptions;
 using Service.Services.UserServices;
 
@@ -26,7 +27,7 @@ namespace RoomWorld.Controllers
         }
 
         [HttpPost("/registration")]
-        public async Task<IActionResult> Registration(UserRegistrationParamsViewModel user)
+        public async Task<IActionResult> Registration(UserRegistrationDTO user)
         {
             try
             {
@@ -44,7 +45,7 @@ namespace RoomWorld.Controllers
         }
 
         [HttpPut("/user/change/profile")]
-        public async Task<IActionResult> ChangeProfile([FromForm]ProfileViewModel user)
+        public async Task<IActionResult> ChangeProfile([FromForm]ProfileDTO user)
         {
             try
             {
@@ -67,7 +68,7 @@ namespace RoomWorld.Controllers
 
 
         [HttpPost("/token")]
-        public async Task<IActionResult> Token(AuthorizeViewModel authorize)
+        public async Task<IActionResult> Token(AuthorizeDTO authorize)
         {
             try
             {
@@ -117,7 +118,7 @@ namespace RoomWorld.Controllers
 
         [HttpPut("/user/change/password")]
         [Authorize]
-        public async Task<IActionResult> ChangePassword(ChangePasswordParamsViewModel changePasswordParams)
+        public async Task<IActionResult> ChangePassword(ChangePasswordParamsDTO changePasswordParams)
         {
             try
             {
@@ -161,7 +162,7 @@ namespace RoomWorld.Controllers
         }
 
         [HttpPut("password/change")]
-        public async Task<IActionResult> ChangePassword(ResetPasswordViewModel resetPasswordViewModel)
+        public async Task<IActionResult> ChangePassword(ResetPasswordDTO resetPasswordViewModel)
         {
             try
             {
@@ -210,7 +211,7 @@ namespace RoomWorld.Controllers
         {
             try
             {
-                await _profileService.ChangeProfileAsync(new ProfileViewModel{Email = "Al@gmail.com",Name = "asdasd",PhoneNumber = "283176511",Surname = "dfasdfsa",Version = version});
+                await _profileService.ChangeProfileAsync(new ProfileDTO{Email = "Al@gmail.com",Name = "asdasd",PhoneNumber = "283176511",Surname = "dfasdfsa",Version = version});
                 return Ok();
             }
             catch (DbUpdateConcurrencyException e)

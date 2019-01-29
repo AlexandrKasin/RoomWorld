@@ -19,7 +19,7 @@ namespace Repository.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Data.Entity.Amenities", b =>
+            modelBuilder.Entity("Data.Entity.ApartmentEntity.Amenities", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -54,7 +54,7 @@ namespace Repository.Migrations
                     b.ToTable("Amenitiese");
                 });
 
-            modelBuilder.Entity("Data.Entity.AmenityTypes", b =>
+            modelBuilder.Entity("Data.Entity.ApartmentEntity.AmenityTypes", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -80,7 +80,7 @@ namespace Repository.Migrations
                     b.ToTable("AmenityTypes");
                 });
 
-            modelBuilder.Entity("Data.Entity.Apartment", b =>
+            modelBuilder.Entity("Data.Entity.ApartmentEntity.Apartment", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -118,7 +118,7 @@ namespace Repository.Migrations
 
                     b.Property<string>("PropertyDescription")
                         .IsRequired()
-                        .HasMaxLength(1000);
+                        .HasMaxLength(10000);
 
                     b.Property<byte[]>("Version")
                         .IsConcurrencyToken()
@@ -133,7 +133,7 @@ namespace Repository.Migrations
                     b.ToTable("Apartments");
                 });
 
-            modelBuilder.Entity("Data.Entity.ApartmentImage", b =>
+            modelBuilder.Entity("Data.Entity.ApartmentEntity.ApartmentImage", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -163,7 +163,7 @@ namespace Repository.Migrations
                     b.ToTable("ApartmentImages");
                 });
 
-            modelBuilder.Entity("Data.Entity.ApartmentLocation", b =>
+            modelBuilder.Entity("Data.Entity.ApartmentEntity.ApartmentLocation", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -206,7 +206,7 @@ namespace Repository.Migrations
                     b.ToTable("ApartmentLocation");
                 });
 
-            modelBuilder.Entity("Data.Entity.ApartmentReservation", b =>
+            modelBuilder.Entity("Data.Entity.ApartmentEntity.ApartmentReservation", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -243,7 +243,7 @@ namespace Repository.Migrations
                     b.ToTable("ApartmentReservation");
                 });
 
-            modelBuilder.Entity("Data.Entity.ApartmentType", b =>
+            modelBuilder.Entity("Data.Entity.ApartmentEntity.ApartmentType", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -272,6 +272,101 @@ namespace Repository.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ApartmentType");
+                });
+
+            modelBuilder.Entity("Data.Entity.ApartmentEntity.RulesOfResidence", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<long?>("ApartmentId");
+
+                    b.Property<long>("CreatedBy");
+
+                    b.Property<DateTime>("CreatedDate");
+
+                    b.Property<bool>("IsAllowed");
+
+                    b.Property<long?>("ModifiedBy");
+
+                    b.Property<DateTime?>("ModifiedDate");
+
+                    b.Property<string>("NameRule")
+                        .IsRequired()
+                        .HasMaxLength(200);
+
+                    b.Property<byte[]>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApartmentId");
+
+                    b.ToTable("RulesOfResidence");
+                });
+
+            modelBuilder.Entity("Data.Entity.ChatEntity.Dialog", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<long?>("ClientId");
+
+                    b.Property<long>("CreatedBy");
+
+                    b.Property<DateTime>("CreatedDate");
+
+                    b.Property<long?>("ModifiedBy");
+
+                    b.Property<DateTime?>("ModifiedDate");
+
+                    b.Property<byte[]>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.ToTable("Dialogs");
+                });
+
+            modelBuilder.Entity("Data.Entity.ChatEntity.Message", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<long>("CreatedBy");
+
+                    b.Property<DateTime>("CreatedDate");
+
+                    b.Property<long?>("DialogId");
+
+                    b.Property<long?>("ModifiedBy");
+
+                    b.Property<DateTime?>("ModifiedDate");
+
+                    b.Property<string>("Text");
+
+                    b.Property<long?>("UserFromId");
+
+                    b.Property<string>("UsernameTo");
+
+                    b.Property<byte[]>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DialogId");
+
+                    b.HasIndex("UserFromId");
+
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("Data.Entity.Role", b =>
@@ -303,39 +398,6 @@ namespace Repository.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Role");
-                });
-
-            modelBuilder.Entity("Data.Entity.RulesOfResidence", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<long?>("ApartmentId");
-
-                    b.Property<long>("CreatedBy");
-
-                    b.Property<DateTime>("CreatedDate");
-
-                    b.Property<bool>("IsAllowed");
-
-                    b.Property<long?>("ModifiedBy");
-
-                    b.Property<DateTime?>("ModifiedDate");
-
-                    b.Property<string>("NameRule")
-                        .IsRequired()
-                        .HasMaxLength(200);
-
-                    b.Property<byte[]>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApartmentId");
-
-                    b.ToTable("RulesOfResidence");
                 });
 
             modelBuilder.Entity("Data.Entity.User", b =>
@@ -415,20 +477,20 @@ namespace Repository.Migrations
                     b.ToTable("UserRoles");
                 });
 
-            modelBuilder.Entity("Data.Entity.Amenities", b =>
+            modelBuilder.Entity("Data.Entity.ApartmentEntity.Amenities", b =>
                 {
-                    b.HasOne("Data.Entity.AmenityTypes", "AmenityType")
+                    b.HasOne("Data.Entity.ApartmentEntity.AmenityTypes", "AmenityType")
                         .WithMany("Amenities")
                         .HasForeignKey("AmenityTypeId");
 
-                    b.HasOne("Data.Entity.Apartment", "Apartment")
+                    b.HasOne("Data.Entity.ApartmentEntity.Apartment", "Apartment")
                         .WithMany("Amenities")
                         .HasForeignKey("ApartmentId");
                 });
 
-            modelBuilder.Entity("Data.Entity.Apartment", b =>
+            modelBuilder.Entity("Data.Entity.ApartmentEntity.Apartment", b =>
                 {
-                    b.HasOne("Data.Entity.ApartmentType", "ApartmentType")
+                    b.HasOne("Data.Entity.ApartmentEntity.ApartmentType", "ApartmentType")
                         .WithMany("Apartments")
                         .HasForeignKey("ApartmentTypeId");
 
@@ -437,24 +499,24 @@ namespace Repository.Migrations
                         .HasForeignKey("OwnerId");
                 });
 
-            modelBuilder.Entity("Data.Entity.ApartmentImage", b =>
+            modelBuilder.Entity("Data.Entity.ApartmentEntity.ApartmentImage", b =>
                 {
-                    b.HasOne("Data.Entity.Apartment", "Apartment")
+                    b.HasOne("Data.Entity.ApartmentEntity.Apartment", "Apartment")
                         .WithMany("ApartmentImages")
                         .HasForeignKey("ApartmentId");
                 });
 
-            modelBuilder.Entity("Data.Entity.ApartmentLocation", b =>
+            modelBuilder.Entity("Data.Entity.ApartmentEntity.ApartmentLocation", b =>
                 {
-                    b.HasOne("Data.Entity.Apartment", "Apartment")
+                    b.HasOne("Data.Entity.ApartmentEntity.Apartment", "Apartment")
                         .WithOne("ApartmentLocation")
-                        .HasForeignKey("Data.Entity.ApartmentLocation", "ApartmentId")
+                        .HasForeignKey("Data.Entity.ApartmentEntity.ApartmentLocation", "ApartmentId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Data.Entity.ApartmentReservation", b =>
+            modelBuilder.Entity("Data.Entity.ApartmentEntity.ApartmentReservation", b =>
                 {
-                    b.HasOne("Data.Entity.Apartment", "Apartment")
+                    b.HasOne("Data.Entity.ApartmentEntity.Apartment", "Apartment")
                         .WithMany("ApartmentReservations")
                         .HasForeignKey("ApartmentId");
 
@@ -463,11 +525,29 @@ namespace Repository.Migrations
                         .HasForeignKey("ClientId");
                 });
 
-            modelBuilder.Entity("Data.Entity.RulesOfResidence", b =>
+            modelBuilder.Entity("Data.Entity.ApartmentEntity.RulesOfResidence", b =>
                 {
-                    b.HasOne("Data.Entity.Apartment", "Apartment")
+                    b.HasOne("Data.Entity.ApartmentEntity.Apartment", "Apartment")
                         .WithMany("RulesOfResidence")
                         .HasForeignKey("ApartmentId");
+                });
+
+            modelBuilder.Entity("Data.Entity.ChatEntity.Dialog", b =>
+                {
+                    b.HasOne("Data.Entity.User", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId");
+                });
+
+            modelBuilder.Entity("Data.Entity.ChatEntity.Message", b =>
+                {
+                    b.HasOne("Data.Entity.ChatEntity.Dialog", "Dialog")
+                        .WithMany("Messages")
+                        .HasForeignKey("DialogId");
+
+                    b.HasOne("Data.Entity.User", "UserFrom")
+                        .WithMany()
+                        .HasForeignKey("UserFromId");
                 });
 
             modelBuilder.Entity("Data.Entity.UserRoles", b =>

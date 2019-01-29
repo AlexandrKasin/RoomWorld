@@ -1,6 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Data.Entity;
+using Data.Entity.ApartmentEntity;
+using Data.Entity.ChatEntity;
+using Data.Entity.UserEntity;
 using Microsoft.EntityFrameworkCore;
 using DbContext = Microsoft.EntityFrameworkCore.DbContext;
 
@@ -20,9 +23,9 @@ namespace Repository.Models
         public DbSet<ApartmentReservation> ApartmentReservation { get; set; }
         public DbSet<ApartmentImage> ApartmentImages { get; set; }
 
-        /*
+        
         public DbSet<Message> Messages { get; set; }
-        public DbSet<Dialog> Dialogs { get; set; }*/
+        public DbSet<Dialog> Dialogs { get; set; }
 
         public DatabaseContext(DbContextOptions options) : base(options)
         {

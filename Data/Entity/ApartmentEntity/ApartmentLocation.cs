@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Data.Entity
+namespace Data.Entity.ApartmentEntity
 {
     public class ApartmentLocation : BaseEntity
     {

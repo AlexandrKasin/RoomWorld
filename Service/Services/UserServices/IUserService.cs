@@ -2,9 +2,9 @@
 using System.Collections;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Data.Entity;
+using Data.Entity.UserEntity;
 
-namespace Service.Services
+namespace Service.Services.UserServices
 {
     public interface IUserService
     {

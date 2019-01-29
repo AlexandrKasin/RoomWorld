@@ -1,4 +1,6 @@
-﻿namespace Data.Entity
+﻿using Data.Entity.UserEntity;
+
+namespace Data.Entity.ChatEntity
 {
     public class Message : BaseEntity
     {

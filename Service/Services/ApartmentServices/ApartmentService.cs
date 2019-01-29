@@ -4,7 +4,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
-using Data.Entity;
+using Data.Entity.ApartmentEntity;
+using Data.Entity.UserEntity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Repository.Repositories;
@@ -73,12 +74,16 @@ namespace Service.Services.ApartmentServices
         public async Task<IList<ApartmentDTO>> GetApartmentByParamsAsync(ApartmentSearchParamsDTO searchParams)
         {
             var apartmentCollection = await (await _apartmentRepository.GetAllAsync(x =>
-                        ((string.IsNullOrWhiteSpace(searchParams.Country)) || string.Equals(x.ApartmentLocation.Country, searchParams.Country,StringComparison.CurrentCultureIgnoreCase)) &&
-                        ((string.IsNullOrWhiteSpace(searchParams.City)) || string.Equals(x.ApartmentLocation.City,searchParams.City,StringComparison.CurrentCultureIgnoreCase)) && 
-                         x.ApartmentReservations.All(o =>!(o.DateFrom.Date <= searchParams.DateFrom.Date &&
-                              o.DateTo.Date >= searchParams.DateFrom.Date) &&
-                            !(o.DateFrom.Date <= searchParams.DateTo.Date && o.DateTo.Date >= searchParams.DateTo.Date) &&
-                            !(o.DateFrom.Date > searchParams.DateFrom.Date && o.DateFrom.Date < searchParams.DateTo.Date))
+                        ((string.IsNullOrWhiteSpace(searchParams.Country)) || string.Equals(x.ApartmentLocation.Country,
+                             searchParams.Country, StringComparison.CurrentCultureIgnoreCase)) &&
+                        ((string.IsNullOrWhiteSpace(searchParams.City)) || string.Equals(x.ApartmentLocation.City,
+                             searchParams.City, StringComparison.CurrentCultureIgnoreCase)) &&
+                        x.ApartmentReservations.All(o => !(o.DateFrom.Date <= searchParams.DateFrom.Date &&
+                                                           o.DateTo.Date >= searchParams.DateFrom.Date) &&
+                                                         !(o.DateFrom.Date <= searchParams.DateTo.Date &&
+                                                           o.DateTo.Date >= searchParams.DateTo.Date) &&
+                                                         !(o.DateFrom.Date > searchParams.DateFrom.Date &&
+                                                           o.DateFrom.Date < searchParams.DateTo.Date))
                     , x => x.ApartmentImages, x => x.ApartmentLocation)).Skip(searchParams.Skip)
                 .Take(searchParams.Take).ToListAsync();
             var apartmentCollectionDTO = _mapper.Map<IList<ApartmentDTO>>(apartmentCollection);
@@ -88,6 +93,38 @@ namespace Service.Services.ApartmentServices
                     apartmentCollection[i].ApartmentImages.Select((img) => img.Url).ToList();
             }
 
+            return apartmentCollectionDTO;
+        }
+
+        public async Task<int> GetAmountApartmentByParamsAsync(ApartmentSearchParamsDTO searchParams)
+        {
+            var apartmentCollectionAmount = (await _apartmentRepository.GetAllAsync(x =>
+                    ((string.IsNullOrWhiteSpace(searchParams.Country)) || string.Equals(x.ApartmentLocation.Country,
+                         searchParams.Country, StringComparison.CurrentCultureIgnoreCase)) &&
+                    ((string.IsNullOrWhiteSpace(searchParams.City)) || string.Equals(x.ApartmentLocation.City,
+                         searchParams.City, StringComparison.CurrentCultureIgnoreCase)) &&
+                    x.ApartmentReservations.All(o => !(o.DateFrom.Date <= searchParams.DateFrom.Date &&
+                                                       o.DateTo.Date >= searchParams.DateFrom.Date) &&
+                                                     !(o.DateFrom.Date <= searchParams.DateTo.Date &&
+                                                       o.DateTo.Date >= searchParams.DateTo.Date) &&
+                                                     !(o.DateFrom.Date > searchParams.DateFrom.Date &&
+                                                       o.DateFrom.Date < searchParams.DateTo.Date))
+                , x => x.ApartmentImages, x => x.ApartmentLocation)).Count();
+            return apartmentCollectionAmount;
+        }
+
+        public async Task<IList<ApartmentDTO>> GetApartmentByEmailAsync()
+        {
+            var email = _httpContextAccessor.HttpContext.User.FindFirst(ClaimsIdentity.DefaultNameClaimType).Value;
+            var apartmentCollection = await (await _apartmentRepository.GetAllAsync(x => x.Owner.Email == email,
+                x => x.ApartmentReservations,
+                x => x.ApartmentImages, x => x.ApartmentLocation)).ToListAsync();
+            var apartmentCollectionDTO = _mapper.Map<IList<ApartmentDTO>>(apartmentCollection);
+            for (var i = 0; i < apartmentCollection.Count; i++)
+            {
+                apartmentCollectionDTO[i].Images =
+                    apartmentCollection[i].ApartmentImages.Select((img) => img.Url).ToList();
+            }
             return apartmentCollectionDTO;
         }
     }

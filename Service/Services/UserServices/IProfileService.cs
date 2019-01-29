@@ -5,9 +5,9 @@ namespace Service.Services.UserServices
 {
     public interface IProfileService
     {
-        Task<ProfileViewModel> GetProflieByEmailAsync();
-        Task ChangeProfileAsync(ProfileViewModel user);
+        Task<ProfileDTO> GetProflieByEmailAsync();
+        Task ChangeProfileAsync(ProfileDTO user);
         Task SendMessageResetPasswordAsync(string email);
-        Task ResetPasswordByTokenAsync(ResetPasswordViewModel model);
+        Task ResetPasswordByTokenAsync(ResetPasswordDTO model);
     }
 }

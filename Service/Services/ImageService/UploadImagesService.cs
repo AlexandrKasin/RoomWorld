@@ -19,7 +19,7 @@ namespace Service.Services.ImageService
 
             foreach (var file in formFile.Files)
             {
-                using (var fs = new FileStream(Path.Combine(@".\wwwroot", usersFolder, file.FileName), FileMode.Create))
+                using (var fs = new FileStream(Path.Combine(@".\wwwroot" + usersFolder, file.FileName), FileMode.Create))
                 {
                     await file.CopyToAsync(fs);
                     pathImages.Add(Path.Combine(usersFolder, file.FileName));

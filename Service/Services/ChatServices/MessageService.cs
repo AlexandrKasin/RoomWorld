@@ -3,9 +3,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data.Entity;
+using Data.Entity.ChatEntity;
 using Microsoft.EntityFrameworkCore;
 using Repository.Repositories;
 using Service.DTO;
+using Service.DTO.ChatDTO;
+using Service.Services.ChatServices;
 
 namespace Service.Services
 {
@@ -39,7 +42,7 @@ namespace Service.Services
             await _dialogRepository.UpdateAsync(dialog);
         }
 
-        public async Task<IList<MessageViewModel>> GetAllDialogsAsync()
+        public async Task<IList<MessageDTO>> GetAllDialogsAsync()
         {
             var dialogs = await (await _dialogRepository.GetAllAsync())
                 .Include(x => x.Messages)
@@ -54,24 +57,24 @@ namespace Service.Services
                 }
             }
 
-            return _mapper.Map<IList<MessageViewModel>>(listMessages);
+            return _mapper.Map<IList<MessageDTO>>(listMessages);
         }
-        public async Task<IList<MessageViewModel>> GetMessagesByEmailAsync(string email)
+        public async Task<IList<MessageDTO>> GetMessagesByEmailAsync(string email)
         {          
             var dialogs = (await _dialogRepository.GetAllAsync(x => x.Client.Email == email))
                 .Include(x => x.Messages)
                 .ThenInclude(x => x.UserFrom).FirstOrDefault();
          
-            return _mapper.Map<IList<MessageViewModel>>(dialogs?.Messages);
+            return _mapper.Map<IList<MessageDTO>>(dialogs?.Messages);
         }
 
-        public async Task<IList<MessageViewModel>> ChangeMessageAsync(string email)
+        public async Task<IList<MessageDTO>> ChangeMessageAsync(string email)
         {
             var dialogs = (await _dialogRepository.GetAllAsync(x => x.Client.Email == email))
                 .Include(x => x.Messages)
                 .ThenInclude(x => x.UserFrom).FirstOrDefault();
 
-            return _mapper.Map<IList<MessageViewModel>>(dialogs?.Messages);
+            return _mapper.Map<IList<MessageDTO>>(dialogs?.Messages);
         }
     }
 }

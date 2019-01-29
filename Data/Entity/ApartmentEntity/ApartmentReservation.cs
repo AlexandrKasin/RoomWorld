@@ -1,7 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Data.Entity.UserEntity;
 
-namespace Data.Entity
+namespace Data.Entity.ApartmentEntity
 {
     public class ApartmentReservation : BaseEntity
     {

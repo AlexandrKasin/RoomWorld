@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Data.Entity;
+using Data.Entity.ChatEntity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Service.DTO;
-using Service.Services;
+using Service.Services.ChatServices;
+using Service.Services.UserServices;
 
 namespace Service.SignalR
 {
@@ -17,7 +18,7 @@ namespace Service.SignalR
         private readonly IUserService _userService;
         private readonly IMessageService _messageService;
 
-        private static readonly IList<ConsultantViewModel> Consultants = new List<ConsultantViewModel>();
+        private static readonly IList<ConsultantDTO> Consultants = new List<ConsultantDTO>();
 
         public ChatHub(IHttpContextAccessor httpContextAccessor, IUserService userService, IMessageService messageService)
         {
@@ -49,10 +50,10 @@ namespace Service.SignalR
             var role = _httpContextAccessor.HttpContext.User.FindFirst(ClaimsIdentity.DefaultRoleClaimType)?.Value;
             var email = _httpContextAccessor.HttpContext.User.FindFirst(ClaimsIdentity.DefaultNameClaimType)?.Value;
 
-            if (role != null && string.Equals(role, "consultant", StringComparison.CurrentCultureIgnoreCase))
+            if (role != null && string.Equals(role, "manager", StringComparison.CurrentCultureIgnoreCase))
             {
                 var user = await _userService.GetUserByEmailAsync(email);
-                var consultant = new ConsultantViewModel
+                var consultant = new ConsultantDTO
                 {
                     IdSignalR = Context.ConnectionId,
                     Email = email,

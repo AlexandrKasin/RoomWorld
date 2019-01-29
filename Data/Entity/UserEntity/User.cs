@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Data.Entity.ApartmentEntity;
 
-namespace Data.Entity
+namespace Data.Entity.UserEntity
 {
     public class User : BaseEntity
     {

@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using AutoMapper;
-using Data.Entity;
+using Data.Entity.UserEntity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -21,11 +21,11 @@ namespace Service.Services.UserServices
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IConfiguration _configuration;
         private readonly IEmailService _emailService;
-        private readonly IHashMd5Service _hashMd5Service;
+        private readonly IHashMd5 _hashMd5Service;
 
         public ProfileService(IMapper mapper, IRepository<User> userRepository,
             IHttpContextAccessor httpContextAccessor, IConfiguration configuration, IEmailService emailService,
-            IHashMd5Service hashMd5Service)
+            IHashMd5 hashMd5Service)
         {
             _mapper = mapper;
             _userRepository = userRepository;
@@ -35,27 +35,22 @@ namespace Service.Services.UserServices
             _hashMd5Service = hashMd5Service;
         }
 
-        public async Task<ProfileViewModel> GetProflieByEmailAsync()
+        public async Task<ProfileDTO> GetProflieByEmailAsync()
         {
             var email = _httpContextAccessor.HttpContext.User.FindFirst(ClaimsIdentity.DefaultNameClaimType).Value;
             var user = await (await _userRepository.GetAllAsync(t => t.Email == email))
                 .FirstOrDefaultAsync();
             if (user == null)
-            {
                 throw new IncorrectParamsException("Email does not exist.");
-            }
-
-            return _mapper.Map<ProfileViewModel>(user);
+            return _mapper.Map<ProfileDTO>(user);
         }
 
-        public async Task ChangeProfileAsync(ProfileViewModel user)
+        public async Task ChangeProfileAsync(ProfileDTO user)
         {
             var currentUser =
                 await (await _userRepository.GetAllAsync(x => x.Email == user.Email)).FirstOrDefaultAsync();
             if (currentUser == null)
-            {
                 throw new IncorrectParamsException("User does not exist.");
-            }
 
             currentUser.Name = user.Name;
             currentUser.Surname = user.Surname;
@@ -76,7 +71,7 @@ namespace Service.Services.UserServices
             await _emailService.SendEmailAsync(email, "Password reset", $"<a href={_configuration["AuthOption:Issuer"]}/change/password/{encryptedText}>Reset password</a>");
         }
 
-        public async Task ResetPasswordByTokenAsync(ResetPasswordViewModel model)
+        public async Task ResetPasswordByTokenAsync(ResetPasswordDTO model)
         {
             var decryptedToken = await Task.Run(() =>
                 Encrypting.Decrypt(HttpUtility.UrlDecode(model.Token), _configuration["EncryptionKey"], true));

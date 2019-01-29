@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Data.Entity.UserEntity;
 
-namespace Data.Entity
+namespace Data.Entity.ChatEntity
 {
     public class Dialog : BaseEntity
     {

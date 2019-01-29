@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
-using Data.Entity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Service;
 using Service.DTO.ApartmentDTO;
-using Service.Exceptions;
 using Service.Services.ApartmentServices;
 
 
@@ -100,17 +95,15 @@ namespace RoomWorld.Controllers
             }
         }
 
-        /* [HttpGet("/apartment")]
+       
+         [HttpPost("/collection/apartment/amount")]
          [Authorize]
-         public async Task<IActionResult> GetFlatById(int id)
+         public async Task<IActionResult> AmountApartmentByLoation(ApartmentSearchParamsDTO apartmentSearchParams)
          {
              try
              {
-                 return Ok(await _flatService.GetFlatByIdAsync(id));
-             }
-             catch (EntityNotExistException e)
-             {
-                 return BadRequest(e.Message);
+                 var amountapartments = await _apartmentService.GetAmountApartmentByParamsAsync(apartmentSearchParams);
+                 return Ok(amountapartments);
              }
              catch (DbUpdateConcurrencyException e)
              {
@@ -121,43 +114,24 @@ namespace RoomWorld.Controllers
                  return BadRequest(e);
              }
          }
- 
-         [HttpGet("/places/amount")]
-         [Authorize]
-         public async Task<IActionResult> AmountFlatByLoation([FromHeader] SearchParamsViewModel searchParams)
-         {
-             try
-             {
-                 var amountFlats = await _flatService.AmountFlatByParamsAsync(searchParams);
-                 return Ok(amountFlats);
-             }
-             catch (DbUpdateConcurrencyException e)
-             {
-                 return BadRequest(e.Message);
-             }
-             catch (Exception e)
-             {
-                 return BadRequest(e);
-             }
-         }
- 
-         [HttpGet("/search")]
-         [Authorize]
-         public async Task<IActionResult> SearchFlats([FromHeader] SearchParamsViewModel searchParams)
-         {
-             try
-             {
-                 var flats = await _flatService.SearchFlatAsync(searchParams);
-                 return Ok(flats);
-             }
-             catch (DbUpdateConcurrencyException e)
-             {
-                 return BadRequest(e.Message);
-             }
-             catch (Exception e)
-             {
-                 return BadRequest(e);
-             }
-         }*/
+
+        [HttpGet("/collection/users/apartment")]
+        [Authorize]
+        public async Task<IActionResult> GetApartmentByEmail()
+        {
+            try
+            {
+                var apartments = await _apartmentService.GetApartmentByEmailAsync();
+                return Ok(apartments);
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
+        }
     }
 }

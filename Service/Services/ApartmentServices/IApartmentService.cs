@@ -10,5 +10,7 @@ namespace Service.Services.ApartmentServices
         Task<List<string>> GetApartmentTypesAsync();
         Task<ApartmentDTO> GetApartmentByIdAsync(int id);
         Task<IList<ApartmentDTO>> GetApartmentByParamsAsync(ApartmentSearchParamsDTO searchParams);
+        Task<int> GetAmountApartmentByParamsAsync(ApartmentSearchParamsDTO searchParams);
+        Task<IList<ApartmentDTO>> GetApartmentByEmailAsync();
     }
 }

@@ -6,11 +6,13 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Data.Entity;
+using Data.Entity.UserEntity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Repository.Repositories;
 using Service.DTO;
+using Service.DTO.UserDTO;
 using Service.Exceptions;
 
 namespace Service.Services.UserServices
@@ -18,10 +20,10 @@ namespace Service.Services.UserServices
     public class TokenService : ITokenService
     {
         private readonly IRepository<User> _repository;
-        private readonly IHashMd5Service _hashMd5Service;
+        private readonly IHashMd5 _hashMd5Service;
         private readonly IConfiguration _configuration;
 
-        public TokenService(IRepository<User> repository, IHashMd5Service hashMd5Service, IConfiguration configuration)
+        public TokenService(IRepository<User> repository, IHashMd5 hashMd5Service, IConfiguration configuration)
         {
             _repository = repository;
             _hashMd5Service = hashMd5Service;
@@ -43,7 +45,7 @@ namespace Service.Services.UserServices
             return claimsIdentity;
         }
 
-        public async Task<TokenViewModel> GetTokenAsync(AuthorizeViewModel authorize)
+        public async Task<TokenDTO> GetTokenAsync(AuthorizeDTO authorize)
         {           
             authorize.Password = _hashMd5Service.GetMd5Hash(authorize.Password);
             var user = await (await _repository.GetAllAsync(t =>
@@ -71,7 +73,7 @@ namespace Service.Services.UserServices
                     SecurityAlgorithms.HmacSha256));
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-            var response = new TokenViewModel
+            var response = new TokenDTO
             {
                 AccessToken = encodedJwt,
                 Username = identity.Name

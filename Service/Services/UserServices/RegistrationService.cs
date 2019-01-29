@@ -3,11 +3,13 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data.Entity;
+using Data.Entity.UserEntity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Repository.Repositories;
 using Service.DTO;
+using Service.DTO.UserDTO;
 using Service.Exceptions;
 
 namespace Service.Services.UserServices
@@ -15,7 +17,7 @@ namespace Service.Services.UserServices
     public class RegistrationService : IRegistrationService
     {
         private readonly IRepository<User> _repositoryUser;
-        private readonly IHashMd5Service _hashMd5Service;
+        private readonly IHashMd5 _hashMd5Service;
         private readonly ITokenService _tokenService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IConfiguration _configuration;
@@ -23,7 +25,7 @@ namespace Service.Services.UserServices
         private readonly IRepository<UserRoles> _repositoryUserRoles;
         private readonly IMapper _mapper;
 
-        public RegistrationService(IRepository<User> repositoryUser, IHashMd5Service hashMd5Service,
+        public RegistrationService(IRepository<User> repositoryUser, IHashMd5 hashMd5Service,
             ITokenService tokenService, IHttpContextAccessor httpContextAccessor, IConfiguration configuration,
             IRepository<Role> repositoryRole, IRepository<UserRoles> repositoryUserRoles, IMapper mapper)
         {
@@ -37,7 +39,7 @@ namespace Service.Services.UserServices
             _mapper = mapper;
         }
 
-        public async Task<TokenViewModel> RegisterUserAsync(UserRegistrationParamsViewModel userParams)
+        public async Task<TokenDTO> RegisterUserAsync(UserRegistrationDTO userParams)
         {
             var user = _mapper.Map<User>(userParams);
             var existsEmail = await (await _repositoryUser.GetAllAsync(t => t.Email == user.Email)).AnyAsync();
@@ -68,11 +70,11 @@ namespace Service.Services.UserServices
             user.Password = _hashMd5Service.GetMd5Hash(user.Password);
             await _repositoryUserRoles.InsertAsync(new UserRoles {User = user, Role = role, CreatedBy = systemUser.Id});
            
-            var token = await _tokenService.GetTokenAsync(new AuthorizeViewModel {Email = user.Email, Password = userParams.Password});
+            var token = await _tokenService.GetTokenAsync(new AuthorizeDTO {Email = user.Email, Password = userParams.Password});
             return token;
         }
 
-        public async Task ChangePasswordAsync(ChangePasswordParamsViewModel changePasswordParams)
+        public async Task ChangePasswordAsync(ChangePasswordParamsDTO changePasswordParams)
         {
             var email = _httpContextAccessor.HttpContext.User.FindFirst(ClaimsIdentity.DefaultNameClaimType).Value;
             var user = await (await _repositoryUser.GetAllAsync(x =>
