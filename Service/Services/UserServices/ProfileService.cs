@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
@@ -38,7 +39,7 @@ namespace Service.Services.UserServices
         public async Task<ProfileDTO> GetProflieByEmailAsync()
         {
             var email = _httpContextAccessor.HttpContext.User.FindFirst(ClaimsIdentity.DefaultNameClaimType).Value;
-            var user = await (await _userRepository.GetAllAsync(t => t.Email == email))
+            var user = await (await _userRepository.GetAllAsync(t => t.Email.ToUpper().Equals(email.ToUpper())))
                 .FirstOrDefaultAsync();
             if (user == null)
                 throw new IncorrectParamsException("Email does not exist.");
@@ -48,33 +49,37 @@ namespace Service.Services.UserServices
         public async Task ChangeProfileAsync(ProfileDTO user)
         {
             var currentUser =
-                await (await _userRepository.GetAllAsync(x => x.Email == user.Email)).FirstOrDefaultAsync();
+                await (await _userRepository.GetAllAsync(x => x.Email.ToUpper().Equals(user.Email.ToUpper())))
+                    .FirstOrDefaultAsync();
             if (currentUser == null)
                 throw new IncorrectParamsException("User does not exist.");
-
             currentUser.Name = user.Name;
             currentUser.Surname = user.Surname;
             currentUser.PhoneNumber = user.PhoneNumber;
-            currentUser.Version = user.Version;/*!*/
+            currentUser.Version = user.Version; /*!*/
             await _userRepository.UpdateAsync(currentUser);
         }
 
         public async Task SendMessageResetPasswordAsync(string email)
         {
-            var isExsist = await (await _userRepository.GetAllAsync()).AnyAsync(user => user.Email.Equals(email,StringComparison.OrdinalIgnoreCase));
+            var isExsist =
+                await (await _userRepository.GetAllAsync()).AnyAsync(user =>
+                    user.Email.ToUpper().Equals(email.ToUpper()));
             if (!isExsist)
                 throw new EntityNotExistException("This email is not exist");
-            var tokenToEncrypt = email + "|" + DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["TimeToResetPassword"]));
+            var tokenToEncrypt = email + "|" +
+                                 DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["TimeToResetPassword"]));
             var encryptedText = Encrypting.Encrypt(tokenToEncrypt, _configuration["EncryptionKey"], true);
             encryptedText = HttpUtility.UrlEncode(encryptedText);
             /*var resetPasswordView = File.ReadAllText(@"..\Service\Templates\View\ResetPassword.html");*/
-            await _emailService.SendEmailAsync(email, "Password reset", $"<a href={_configuration["AuthOption:Issuer"]}/change/password/{encryptedText}>Reset password</a>");
+            await _emailService.SendEmailAsync(email, "Password reset",
+                $"<a href={_configuration["AuthOption:Issuer"]}/change/password/{encryptedText}>Reset password</a>");
         }
 
         public async Task ResetPasswordByTokenAsync(ResetPasswordDTO model)
         {
-            var decryptedToken = await Task.Run(() =>
-                Encrypting.Decrypt(HttpUtility.UrlDecode(model.Token), _configuration["EncryptionKey"], true));
+            var decryptedToken =
+                Encrypting.Decrypt(HttpUtility.UrlDecode(model.Token), _configuration["EncryptionKey"], true);
             var tokenParts = decryptedToken.Split("|");
             if (tokenParts.Length < 2)
                 throw new InvalidDataException("TokenViewModel is not valid");

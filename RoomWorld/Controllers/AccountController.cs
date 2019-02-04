@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Service;
 using Service.DTO;
 using Service.DTO.UserDTO;
 using Service.Exceptions;
@@ -187,6 +186,7 @@ namespace RoomWorld.Controllers
             }
         }
 
+        /**/
         [HttpGet("/get/version")]
         [Authorize]
         public async Task<IActionResult> GetVersion()
@@ -223,5 +223,6 @@ namespace RoomWorld.Controllers
                 return BadRequest(e);
             }
         }
+        /**/
     }
 }

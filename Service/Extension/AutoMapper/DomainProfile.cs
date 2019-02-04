@@ -1,5 +1,5 @@
-﻿using AutoMapper;
-using Data.Entity;
+﻿using System.Linq;
+using AutoMapper;
 using Data.Entity.ApartmentEntity;
 using Data.Entity.ChatEntity;
 using Data.Entity.UserEntity;
@@ -9,7 +9,7 @@ using Service.DTO.ApartmentDTO;
 using Service.DTO.ChatDTO;
 using Service.DTO.UserDTO;
 
-namespace Service.Extension
+namespace Service.Extension.AutoMapper
 {
     public class DomainProfile : Profile
     {
@@ -23,7 +23,8 @@ namespace Service.Extension
             CreateMap<ApartmentInsertDTO, Apartment>();
             CreateMap<ApartmentLocationDTO, ApartmentLocation>();
             CreateMap<RulesOfResidenceDTO, RulesOfResidence>();
-            CreateMap<Apartment, ApartmentDTO>();
+            CreateMap<Apartment, ApartmentDTO>().ForMember(x => x.Images, x=> x.MapFrom(z => z.ApartmentImages.Select(y => y.Url)))
+                .ForMember(x => x.ApartmentTypeString, x => x.MapFrom(z => z.ApartmentType.Name));
             CreateMap<ApartmentReservationDTO, ApartmentReservation>();
             CreateMap<ReservationParamsDTO, ApartmentReservation>();
         }

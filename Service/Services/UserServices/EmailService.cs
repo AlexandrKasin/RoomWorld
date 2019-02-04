@@ -19,9 +19,7 @@ namespace Service.Services.UserServices
         public async Task SendEmailAsync(string email, string subject, string message)
         {
             if (!new EmailAddressAttribute().IsValid(email))
-            {
                 throw new InvalidDataException("Incorrect email address");
-            }
 
             var emailMessage = new MimeMessage();
             emailMessage.From.Add(new MailboxAddress("RoomWorld email service",

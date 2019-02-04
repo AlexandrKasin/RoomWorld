@@ -5,7 +5,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Data.Entity;
 using Data.Entity.UserEntity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -38,7 +37,8 @@ namespace Service.Services.UserServices
                 new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
-            claims.AddRange(user.UserRoles.Select(role => new Claim(ClaimsIdentity.DefaultRoleClaimType, role.Role.Name)));
+            claims.AddRange(user.UserRoles
+                .Select(role => new Claim(ClaimsIdentity.DefaultRoleClaimType, role.Role.Name)).ToList());
             var claimsIdentity =
                 new ClaimsIdentity(claims, "TokenViewModel", ClaimsIdentity.DefaultNameClaimType,
                     ClaimsIdentity.DefaultRoleClaimType);
@@ -46,20 +46,16 @@ namespace Service.Services.UserServices
         }
 
         public async Task<TokenDTO> GetTokenAsync(AuthorizeDTO authorize)
-        {           
+        {
             authorize.Password = _hashMd5Service.GetMd5Hash(authorize.Password);
             var user = await (await _repository.GetAllAsync(t =>
                 t.Email == authorize.Email)).Include("UserRoles.Role").FirstOrDefaultAsync();
             if (user == null)
-            {
-                throw  new EntityNotExistException("Email address does not exist.");
-            }
+                throw new EntityNotExistException("Email address does not exist.");
 
             var identity = GetIdentity(user);
             if (user.Password != authorize.Password || identity == null)
-            {
                 throw new IncorrectParamsException("Incorrect email or password.");
-            }
 
             var now = DateTime.UtcNow;
             var jwt = new JwtSecurityToken(
@@ -76,7 +72,8 @@ namespace Service.Services.UserServices
             var response = new TokenDTO
             {
                 AccessToken = encodedJwt,
-                Username = identity.Name
+                Username = identity.Name,
+                Roles = user.UserRoles.Select(role => role.Role.Name).ToList()
             };
             return response;
         }

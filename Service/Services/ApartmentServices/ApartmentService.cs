@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -11,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Repository.Repositories;
 using Service.DTO.ApartmentDTO;
 using Service.Exceptions;
+using Service.Extension.ApartmentExtention;
 using Service.Services.ImageService;
 
 namespace Service.Services.ApartmentServices
@@ -39,23 +39,25 @@ namespace Service.Services.ApartmentServices
         public async Task InsertApartmentAsync(ApartmentInsertDTO apartmentInsertDTO)
         {
             var email = _httpContextAccessor.HttpContext.User.FindFirst(ClaimsIdentity.DefaultNameClaimType).Value;
-            var owner = await (await _userRepository.GetAllAsync(x => x.Email == email)).FirstOrDefaultAsync();
+            var owner = await (await _userRepository.GetAllAsync(x => x.Email.ToUpper().Equals(email.ToUpper())))
+                .FirstOrDefaultAsync();
             var apartment = _mapper.Map<Apartment>(apartmentInsertDTO);
             var images = await _imagesService.UploadAsync(apartmentInsertDTO.Images, email);
             var apartmenrType =
-                (await _apartmentTypeRepository.GetAllAsync(x => string.Equals(x.Name,
-                    apartmentInsertDTO.ApartmentTypeString, StringComparison.CurrentCultureIgnoreCase)))
+                (await _apartmentTypeRepository.GetAllAsync(x =>
+                    x.Name.ToUpper().Equals(apartmentInsertDTO.ApartmentTypeString.ToUpper())))
                 .FirstOrDefault();
-            apartment.ApartmentImages = images.Select((path) => new ApartmentImage {Url = path}).ToList();
+            apartment.ApartmentImages = images.Select(path => new ApartmentImage {Url = path}).ToList();
             apartment.ApartmentType =
                 apartmenrType ?? throw new EntityNotExistException("Current apartment type not exists");
             apartment.Owner = owner;
+            apartment.CreatedBy = owner.Id;
             await _apartmentRepository.InsertAsync(apartment);
         }
 
         public async Task<List<string>> GetApartmentTypesAsync()
         {
-            return await (await _apartmentTypeRepository.GetAllAsync()).Select((type) => type.Name).ToListAsync();
+            return await (await _apartmentTypeRepository.GetAllAsync()).Select(type => type.Name).ToListAsync();
         }
 
         public async Task<ApartmentDTO> GetApartmentByIdAsync(int id)
@@ -66,65 +68,33 @@ namespace Service.Services.ApartmentServices
                 .FirstOrDefaultAsync();
             if (apartment == null) throw new EntityNotExistException("This apartment is not exists.");
             var apartmentDTO = _mapper.Map<ApartmentDTO>(apartment);
-            apartmentDTO.Images = apartment.ApartmentImages.Select((img) => img.Url).ToList();
-            apartmentDTO.ApartmentTypeString = apartment.ApartmentType.Name;
             return apartmentDTO;
         }
 
         public async Task<IList<ApartmentDTO>> GetApartmentByParamsAsync(ApartmentSearchParamsDTO searchParams)
         {
-            var apartmentCollection = await (await _apartmentRepository.GetAllAsync(x =>
-                        ((string.IsNullOrWhiteSpace(searchParams.Country)) || string.Equals(x.ApartmentLocation.Country,
-                             searchParams.Country, StringComparison.CurrentCultureIgnoreCase)) &&
-                        ((string.IsNullOrWhiteSpace(searchParams.City)) || string.Equals(x.ApartmentLocation.City,
-                             searchParams.City, StringComparison.CurrentCultureIgnoreCase)) &&
-                        x.ApartmentReservations.All(o => !(o.DateFrom.Date <= searchParams.DateFrom.Date &&
-                                                           o.DateTo.Date >= searchParams.DateFrom.Date) &&
-                                                         !(o.DateFrom.Date <= searchParams.DateTo.Date &&
-                                                           o.DateTo.Date >= searchParams.DateTo.Date) &&
-                                                         !(o.DateFrom.Date > searchParams.DateFrom.Date &&
-                                                           o.DateFrom.Date < searchParams.DateTo.Date))
-                    , x => x.ApartmentImages, x => x.ApartmentLocation)).Skip(searchParams.Skip)
-                .Take(searchParams.Take).ToListAsync();
+            var apartmentCollection =
+                await (await _apartmentRepository.GetAllAsync(searchParams.GetExpression(),
+                        x => x.ApartmentImages, x => x.ApartmentLocation, x => x.ApartmentType))
+                    .Skip(searchParams.Skip).Take(searchParams.Take).ToListAsync();
             var apartmentCollectionDTO = _mapper.Map<IList<ApartmentDTO>>(apartmentCollection);
-            for (var i = 0; i < apartmentCollection.Count; i++)
-            {
-                apartmentCollectionDTO[i].Images =
-                    apartmentCollection[i].ApartmentImages.Select((img) => img.Url).ToList();
-            }
-
             return apartmentCollectionDTO;
         }
 
         public async Task<int> GetAmountApartmentByParamsAsync(ApartmentSearchParamsDTO searchParams)
         {
-            var apartmentCollectionAmount = (await _apartmentRepository.GetAllAsync(x =>
-                    ((string.IsNullOrWhiteSpace(searchParams.Country)) || string.Equals(x.ApartmentLocation.Country,
-                         searchParams.Country, StringComparison.CurrentCultureIgnoreCase)) &&
-                    ((string.IsNullOrWhiteSpace(searchParams.City)) || string.Equals(x.ApartmentLocation.City,
-                         searchParams.City, StringComparison.CurrentCultureIgnoreCase)) &&
-                    x.ApartmentReservations.All(o => !(o.DateFrom.Date <= searchParams.DateFrom.Date &&
-                                                       o.DateTo.Date >= searchParams.DateFrom.Date) &&
-                                                     !(o.DateFrom.Date <= searchParams.DateTo.Date &&
-                                                       o.DateTo.Date >= searchParams.DateTo.Date) &&
-                                                     !(o.DateFrom.Date > searchParams.DateFrom.Date &&
-                                                       o.DateFrom.Date < searchParams.DateTo.Date))
-                , x => x.ApartmentImages, x => x.ApartmentLocation)).Count();
+            var apartmentCollectionAmount =
+                (await _apartmentRepository.GetAllAsync(searchParams.GetExpression())).Count();
             return apartmentCollectionAmount;
         }
 
         public async Task<IList<ApartmentDTO>> GetApartmentByEmailAsync()
         {
             var email = _httpContextAccessor.HttpContext.User.FindFirst(ClaimsIdentity.DefaultNameClaimType).Value;
-            var apartmentCollection = await (await _apartmentRepository.GetAllAsync(x => x.Owner.Email == email,
-                x => x.ApartmentReservations,
-                x => x.ApartmentImages, x => x.ApartmentLocation)).ToListAsync();
+            var apartmentCollection = await (await _apartmentRepository.GetAllAsync(
+                x => string.Equals(x.Owner.Email.ToUpper(), email.ToUpper()),
+                x => x.ApartmentReservations, x => x.ApartmentImages, x => x.ApartmentLocation)).ToListAsync();
             var apartmentCollectionDTO = _mapper.Map<IList<ApartmentDTO>>(apartmentCollection);
-            for (var i = 0; i < apartmentCollection.Count; i++)
-            {
-                apartmentCollectionDTO[i].Images =
-                    apartmentCollection[i].ApartmentImages.Select((img) => img.Url).ToList();
-            }
             return apartmentCollectionDTO;
         }
     }

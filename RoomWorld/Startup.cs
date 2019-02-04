@@ -67,11 +67,11 @@ namespace RoomWorld
                             {
                                 context.Token = accessToken;
                             }
+
                             return Task.CompletedTask;
                         }
                     };
                 });
-
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IUserService, UserService>();
@@ -85,15 +85,13 @@ namespace RoomWorld
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IMessageService, MessageService>();
 
-
             services.AddCors(o => o.AddPolicy("Allow-Origin", builder =>
             {
-                builder.AllowAnyOrigin()
+                builder.WithOrigins(Configuration["AuthOption:Issuer"])
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials();
             }));
-
             services.Configure<MvcOptions>(options =>
             {
                 options.Filters.Add(new CorsAuthorizationFilterFactory("Allow-Origin"));

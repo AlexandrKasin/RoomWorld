@@ -39,7 +39,6 @@ namespace Service.Services.UserServices
             return await (await _repository.GetAllAsync(predicate, includeParams)).ToListAsync();
         }
 
-
         public async Task UpdateUserAsync(User user)
         {
             await _repository.UpdateAsync(user);
