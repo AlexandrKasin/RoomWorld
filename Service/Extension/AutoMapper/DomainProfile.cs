@@ -15,15 +15,19 @@ namespace Service.Extension.AutoMapper
     {
         public DomainProfile()
         {
-            CreateMap<User, UserDTO>();          
+            CreateMap<User, UserDTO>();
             CreateMap<User, ProfileDTO>();
             CreateMap<UserRegistrationDTO, User>();
             CreateMap<Message, MessageDTO>();
 
             CreateMap<ApartmentInsertDTO, Apartment>();
             CreateMap<ApartmentLocationDTO, ApartmentLocation>();
+            CreateMap<ApartmentLocation, ApartmentLocationDTO>()
+                .ForPath(x => x.Coordinates.Latitude, x => x.MapFrom(z => z.Coordinates.X))
+                .ForPath(x => x.Coordinates.Longitude, x => x.MapFrom(z => z.Coordinates.Y));
             CreateMap<RulesOfResidenceDTO, RulesOfResidence>();
-            CreateMap<Apartment, ApartmentDTO>().ForMember(x => x.Images, x=> x.MapFrom(z => z.ApartmentImages.Select(y => y.Url)))
+            CreateMap<Apartment, ApartmentDTO>()
+                .ForMember(x => x.Images, x => x.MapFrom(z => z.ApartmentImages.Select(y => y.Url)))
                 .ForMember(x => x.ApartmentTypeString, x => x.MapFrom(z => z.ApartmentType.Name));
             CreateMap<ApartmentReservationDTO, ApartmentReservation>();
             CreateMap<ReservationParamsDTO, ApartmentReservation>();

@@ -7,6 +7,7 @@ using Data.Entity.ApartmentEntity;
 using Data.Entity.UserEntity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 using Repository.Repositories;
 using Service.DTO.ApartmentDTO;
 using Service.Exceptions;
@@ -52,6 +53,7 @@ namespace Service.Services.ApartmentServices
                 apartmenrType ?? throw new EntityNotExistException("Current apartment type not exists");
             apartment.Owner = owner;
             apartment.CreatedBy = owner.Id;
+            /*apartment.ApartmentLocation.Coordinates = new Point(20.545, -80.4564){SRID = 4326};*/
             await _apartmentRepository.InsertAsync(apartment);
         }
 

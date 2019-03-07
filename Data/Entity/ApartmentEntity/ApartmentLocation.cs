@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using GeoAPI.Geometries;
+
 
 namespace Data.Entity.ApartmentEntity
 {
@@ -19,6 +21,8 @@ namespace Data.Entity.ApartmentEntity
         [Required]
         [MaxLength(400)]
         public string StreetAddress { get; set; }
+
+        public IPoint Coordinates { get; set; }
 
         [ForeignKey("Apartment")]
         public long ApartmentId { get; set; }
