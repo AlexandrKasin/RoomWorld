@@ -2,11 +2,13 @@
 using AutoMapper;
 using Data.Entity.ApartmentEntity;
 using Data.Entity.ChatEntity;
+using Data.Entity.Feedback;
 using Data.Entity.UserEntity;
 using Service.DTO;
 using Service.DTO.apartmentReservation;
 using Service.DTO.ApartmentDTO;
 using Service.DTO.ChatDTO;
+using Service.DTO.FeedbackDTO;
 using Service.DTO.UserDTO;
 
 namespace Service.Extension.AutoMapper
@@ -31,6 +33,7 @@ namespace Service.Extension.AutoMapper
                 .ForMember(x => x.ApartmentTypeString, x => x.MapFrom(z => z.ApartmentType.Name));
             CreateMap<ApartmentReservationDTO, ApartmentReservation>();
             CreateMap<ReservationParamsDTO, ApartmentReservation>();
+            CreateMap<FeedbackDTO, Feedback>();
         }
     }
 }

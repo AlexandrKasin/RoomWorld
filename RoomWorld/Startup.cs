@@ -15,6 +15,7 @@ using Repository.Repositories;
 using Service.Services;
 using Service.Services.ApartmentServices;
 using Service.Services.ChatServices;
+using Service.Services.FeedbackServices;
 using Service.Services.ImageService;
 using Service.Services.UserServices;
 using Service.SignalR;
@@ -33,7 +34,8 @@ namespace RoomWorld
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<DatabaseContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), x => x.UseNetTopologySuite()));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
+                    x => x.UseNetTopologySuite()));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddAutoMapper();
@@ -84,6 +86,7 @@ namespace RoomWorld
             services.AddScoped<IUploadImagesService, UploadImagesService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IMessageService, MessageService>();
+            services.AddScoped<IFeedbackService, FeedbackService>();
 
             services.AddCors(o => o.AddPolicy("Allow-Origin", builder =>
             {

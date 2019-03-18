@@ -37,6 +37,8 @@ namespace Data.Entity.UserEntity
 
         public ICollection<ApartmentReservation> ApartmentReservations { get; set; }
 
+        public ICollection<Feedback.Feedback> Feedbacks { get; set; }
+
         /*public ICollection<Message> Messages { get; set; }*/
 
         /*public ICollection<Dialog> Dialogs { get; set; }*/

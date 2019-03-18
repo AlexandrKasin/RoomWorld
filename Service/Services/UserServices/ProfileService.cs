@@ -56,7 +56,7 @@ namespace Service.Services.UserServices
             currentUser.Name = user.Name;
             currentUser.Surname = user.Surname;
             currentUser.PhoneNumber = user.PhoneNumber;
-            currentUser.Version = user.Version; /*!*/
+            currentUser.Version = user.Version;
             await _userRepository.UpdateAsync(currentUser);
         }
 
