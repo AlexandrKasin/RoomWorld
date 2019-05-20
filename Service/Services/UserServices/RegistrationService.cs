@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
+using Data;
 using Data.Entity;
 using Data.Entity.UserEntity;
 using Microsoft.AspNetCore.Http;
@@ -42,35 +43,48 @@ namespace Service.Services.UserServices
         public async Task<TokenDTO> RegisterUserAsync(UserRegistrationDTO userParams)
         {
             var user = _mapper.Map<User>(userParams);
-            var existsEmail = await (await _repositoryUser.GetAllAsync(t => t.Email == user.Email)).AnyAsync();
+            var existsEmail =
+                await (await _repositoryUser.GetAllAsync(t => t.Email.ToUpper().Equals(user.Email.ToUpper())))
+                    .AnyAsync();
             if (existsEmail)
             {
                 throw new EntityAlredyExistsException("This email already exists.");
             }
-            var existsUsername = await (await _repositoryUser.GetAllAsync(t => t.Username == user.Username)).AnyAsync();
+
+            var existsUsername =
+                await (await _repositoryUser.GetAllAsync(t => t.Username.ToUpper().Equals(user.Username.ToUpper())))
+                    .AnyAsync();
             if (existsUsername)
             {
                 throw new EntityAlredyExistsException("This username already exists.");
             }
 
             var role = await (await _repositoryRole.GetAllAsync(r =>
-                string.Equals(r.Name, "User", StringComparison.CurrentCultureIgnoreCase))).FirstOrDefaultAsync();
+                r.Name.ToUpper().Equals(RolesEnum.User.ToString().ToUpper()))).FirstOrDefaultAsync();
             if (role == null)
             {
                 throw new EntityNotExistException("Role - user, not exists.");
             }
 
             var systemUser =
-                await (await _repositoryUser.GetAllAsync(t => t.Email == _configuration["EmailSystemUser"])).FirstOrDefaultAsync();
+                await (await _repositoryUser.GetAllAsync(t =>
+                        t.Email.ToUpper().Equals(_configuration["EmailSystemUser"].ToUpper())))
+                    .FirstOrDefaultAsync();
             if (systemUser == null)
             {
-                throw new EntityNotExistException("System user with email: " + _configuration["EmailSystemUser"] + "not exist");
+                throw new EntityNotExistException("System user with email: " + _configuration["EmailSystemUser"] +
+                                                  "not exist");
             }
+
             user.CreatedBy = systemUser.Id;
             user.Password = _hashMd5Service.GetMd5Hash(user.Password);
             await _repositoryUserRoles.InsertAsync(new UserRoles {User = user, Role = role, CreatedBy = systemUser.Id});
-           
-            var token = await _tokenService.GetTokenAsync(new AuthorizeDTO {Email = user.Email, Password = userParams.Password});
+
+            var token = await _tokenService.GetTokenAsync(new AuthorizeDTO
+            {
+                Email = user.Email,
+                Password = userParams.Password
+            });
             return token;
         }
 
@@ -84,6 +98,7 @@ namespace Service.Services.UserServices
             {
                 throw new IncorrectParamsException("Incorrect current password.");
             }
+
             user.Password = _hashMd5Service.GetMd5Hash(changePasswordParams.NewPassword);
             await _repositoryUser.UpdateAsync(user);
         }

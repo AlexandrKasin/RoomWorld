@@ -60,7 +60,7 @@ namespace Service.Services.ApartmentServices
             return reservationsDTO;
         }
 
-        public async Task<IList<ApartmentReservationDTO>> GetOrdersForUsersFlatsAsync() /*!*/
+        public async Task<IList<ApartmentReservationDTO>> GetOrdersForUsersFlatsAsync()
         {
             var email = _httpContextAccessor.HttpContext.User.FindFirst(ClaimsIdentity.DefaultNameClaimType).Value;
             var orders = (await _reservationRepository.GetAllAsync(

@@ -49,7 +49,7 @@ namespace Service.Services.UserServices
         {
             authorize.Password = _hashMd5Service.GetMd5Hash(authorize.Password);
             var user = await (await _repository.GetAllAsync(t =>
-                t.Email == authorize.Email)).Include("UserRoles.Role").FirstOrDefaultAsync();
+                t.Email.ToUpper().Equals(authorize.Email))).Include("UserRoles.Role").FirstOrDefaultAsync();
             if (user == null)
                 throw new EntityNotExistException("Email address does not exist.");
 

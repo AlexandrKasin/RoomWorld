@@ -6,6 +6,7 @@ namespace Service.DTO.ApartmentDTO
     public class ApartmentDTO
     {
         public long Id { get; set; }
+        public DateTime CreatedDate { get; set; }
         public string HeadTitle { get; set; }
         public string PropertyDescription { get; set; }
         public int Accommodates { get; set; }

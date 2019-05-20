@@ -76,8 +76,14 @@ namespace Service.Services.ApartmentServices
         public async Task<IList<ApartmentDTO>> GetApartmentByParamsAsync(ApartmentSearchParamsDTO searchParams)
         {
             var apartmentCollection =
-                await (await _apartmentRepository.GetAllAsync(searchParams.GetExpression(),
-                        x => x.ApartmentImages, x => x.ApartmentLocation, x => x.ApartmentType))
+                await (searchParams.Sort.Type == null
+                        ? await _apartmentRepository.GetAllAsync(searchParams.GetExpression(),x => x.ApartmentImages, x => x.ApartmentLocation, x => x.ApartmentType) 
+                        : searchParams.Sort.Direction
+                        ? (await _apartmentRepository.GetAllAsync(searchParams.GetExpression(),x => x.ApartmentImages, x => x.ApartmentLocation, x => x.ApartmentType))
+                            .OrderBy(searchParams.Sort.GetSortExpression())
+                        : (await _apartmentRepository.GetAllAsync(searchParams.GetExpression(),x => x.ApartmentImages, x => x.ApartmentLocation, x => x.ApartmentType))                        
+                            .OrderByDescending(searchParams.Sort.GetSortExpression())
+                    )
                     .Skip(searchParams.Skip).Take(searchParams.Take).ToListAsync();
             var apartmentCollectionDTO = _mapper.Map<IList<ApartmentDTO>>(apartmentCollection);
             return apartmentCollectionDTO;
